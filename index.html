@@ -1,0 +1,1842 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>5500 Sponsor Lookup</title>
+<style>
+/* Layout: one full-width column — search bar across the top, sponsor summary, then one dossier per DB plan. */
+:root {
+  --bg: #f5f6f4;
+  --panel: #ffffff;
+  --ink: #17201f;
+  --ink-2: #4a5654;
+  --ink-3: #78837f;
+  --rule: #dde2df;
+  --rule-2: #eceeec;
+  --accent: #1d5b73;
+  --accent-soft: #e2edf1;
+  --hl: #fdf3c7;
+  --good: #1e7a46; --good-bg: #e3f3e8;
+  --warn: #9a6200; --warn-bg: #fbefd6;
+  --bad: #b23a2f; --bad-bg: #f9e3e0;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7;
+  --l1:#26343f; --l2:#4d6274; --l3:#7a90a3; --l4:#adbfcd;
+  --f-display: Arial, Helvetica, sans-serif;
+  --f-body: Arial, Helvetica, sans-serif;
+  --f-data: Arial, Helvetica, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#121716; --panel:#1a201f; --ink:#e8edeb; --ink-2:#b2bcb9; --ink-3:#86918d; --rule:#2d3533; --rule-2:#232a29;
+  --accent:#7cc0d8; --accent-soft:#1e3640; --hl:#4a3f12;
+  --good:#6fd39a; --good-bg:#173524; --warn:#e8b65a; --warn-bg:#3a2d12; --bad:#f08b80; --bad-bg:#3d1f1c;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9;
+  --l1:#dbe5ec; --l2:#a9bccb; --l3:#7890a4; --l4:#55697b;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg:#121716; --panel:#1a201f; --ink:#e8edeb; --ink-2:#b2bcb9; --ink-3:#86918d; --rule:#2d3533; --rule-2:#232a29;
+  --accent:#7cc0d8; --accent-soft:#1e3640; --hl:#4a3f12;
+  --good:#6fd39a; --good-bg:#173524; --warn:#e8b65a; --warn-bg:#3a2d12; --bad:#f08b80; --bad-bg:#3d1f1c;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9;
+  --l1:#dbe5ec; --l2:#a9bccb; --l3:#7890a4; --l4:#55697b;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { background: var(--bg); color: var(--ink); font: 14px/1.5 var(--f-body); }
+.wrap { padding-inline: 20px; padding-block: 0 40px; max-width: 1280px; margin: 0 auto; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+.mono { font-family: var(--f-data); font-size: 12.5px; }
+.lab { font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.note { font-size: 12.5px; color: var(--ink-3); }
+
+/* top bar with search */
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); padding-block: 14px 12px; border-bottom: 1px solid var(--rule); margin-bottom: 18px; }
+/* row 1: title, data stamp, Lock. row 2: a wide search with the view toggles beside it */
+.tbrow { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; }
+.tbrow .stamp { margin-left: auto; }
+.tbrow2 { display: flex; align-items: center; gap: 10px 14px; margin-top: 12px; }
+.tbrow2 .search { flex: 1 1 auto; max-width: none; }
+.topbar h1 { font-family: var(--f-display); font-weight: 600; font-size: 24px; letter-spacing: -.01em; white-space: nowrap; }
+.topbar h1 span { color: var(--accent); }
+.stamp { color: var(--ink-3); font-size: 12px; text-align: right; }
+
+.search { position: relative; max-width: 640px; width: 100%; }
+.search input { width: 100%; font: 500 16px var(--f-body); color: var(--ink); background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 12px 14px 12px 40px; }
+.search input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--ink-3); }
+.drop { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; box-shadow: 0 10px 30px rgba(15, 30, 35, .16); max-height: min(440px, 70vh); overflow: auto; }
+.drop .cnt { padding: 7px 12px; font-size: 11.5px; color: var(--ink-3); border-bottom: 1px solid var(--rule-2); position: sticky; top: 0; background: var(--panel); }
+.res { display: block; width: 100%; text-align: left; font: inherit; color: inherit; background: none; border: 0; border-bottom: 1px solid var(--rule-2); padding: 8px 12px; cursor: pointer; }
+.res:last-child { border-bottom: 0; }
+.res:hover, .res.on { background: var(--accent-soft); }
+.res .nm { font-weight: 600; font-size: 13.5px; line-height: 1.3; }
+.res .meta { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 12px; color: var(--ink-3); margin-top: 1px; }
+.res .meta b { color: var(--ink-2); font-weight: 600; }
+mark { background: var(--hl); color: inherit; border-radius: 2px; }
+.empty { padding: 14px 12px; color: var(--ink-3); font-size: 13px; }
+
+/* report */
+.report { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 20px 22px; min-width: 0; }
+.sp-head h2 { font-family: var(--f-display); font-weight: 600; font-size: 32px; line-height: 1.1; letter-spacing: -.01em; }
+.sp-sub { color: var(--ink-2); margin-top: 4px; font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.aka { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+.split { display: grid; grid-template-columns: minmax(0,3fr) minmax(0,2fr); gap: 14px; margin-top: 16px; }
+@media (max-width: 640px) { .split { grid-template-columns: minmax(0,1fr); } }
+.tot { border: 1px solid var(--rule); border-radius: 8px; padding: 12px 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: 8px 12px; align-content: start; }
+.fs { font-weight: 600; }
+.fs.good { color: var(--good); } .fs.warn { color: var(--warn); } .fs.bad { color: var(--bad); }
+.tot .k { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.tot .v { font: 600 20px var(--f-body); font-variant-numeric: tabular-nums; }
+.tot .v small { display: block; font: 400 11.5px var(--f-body); color: var(--ink-3); }
+.chip { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; letter-spacing: .05em; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; white-space: nowrap; }
+.chip.db { background: var(--accent); color: var(--panel); }
+.chip.dc { background: var(--accent-soft); color: var(--accent); }
+.chip.py { background: var(--rule-2); color: var(--ink-2); font-family: var(--f-data); letter-spacing: 0; text-transform: none; font-weight: 500; }
+.chip.filing { background: var(--accent-soft); color: var(--accent); text-decoration: none; letter-spacing: 0; text-transform: none; font-weight: 600; }
+.chip.filing:hover { text-decoration: underline; }
+.chip.py.new { background: var(--good-bg); color: var(--good); }
+
+.tw { overflow-x: auto; margin-top: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+td { padding: 7px 8px; border-bottom: 1px solid var(--rule-2); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+tfoot td { border-top: 1px solid var(--ink-3); font-weight: 600; }
+th.n, td.n { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+td .pn { color: var(--ink-3); font-family: var(--f-data); font-size: 11.5px; }
+tr.jump { cursor: pointer; }
+tr.jump:hover td { background: var(--accent-soft); }
+
+/* DB dossiers */
+.dossier h3 { font-family: var(--f-display); font-size: 22px; font-weight: 600; line-height: 1.2; }
+.dh { padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.dh .ids { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.sec { margin-top: 18px; min-width: 0; }
+.sec > .lab { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.sec > .lab i { font-style: normal; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--ink-3); }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+.kpis.k5 { grid-template-columns: repeat(5, minmax(0,1fr)); }
+@media (max-width: 720px) { .kpis, .kpis.k5 { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
+.kpi .v { font: 600 24px var(--f-body); font-variant-numeric: tabular-nums; line-height: 1.15; }
+.kpi .s { font-size: 11.5px; color: var(--ink-3); }
+.status { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 10px; margin-top: 4px; }
+.status.good { background: var(--good-bg); color: var(--good); }
+.status.warn { background: var(--warn-bg); color: var(--warn); }
+.status.bad { background: var(--bad-bg); color: var(--bad); }
+
+/* FT vs MV stacked chart */
+.fx { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 20px 32px; align-items: start; margin-top: 18px; }
+@media (max-width: 860px) { .fx { grid-template-columns: minmax(0,1fr); } }
+.chart { position: relative; height: 300px; display: grid; grid-template-columns: 52px minmax(0,1fr); }
+.yaxis { position: relative; height: 270px; }
+.yaxis span { position: absolute; right: 8px; transform: translateY(50%); font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.plot { position: relative; height: 270px; border-bottom: 1px solid var(--ink-3); }
+.plot .grid { position: absolute; left: 0; right: 0; border-top: 1px solid var(--rule-2); }
+.cols { position: absolute; inset: 0; display: flex; justify-content: space-around; align-items: flex-end; padding-inline: 8%; gap: 12%; }
+.col { position: relative; flex: 1; max-width: 120px; height: 100%; display: flex; flex-direction: column-reverse; gap: 2px; }
+.seg { width: 100%; flex: none; min-height: 1px; position: relative; cursor: default; }
+.col .seg:first-child { border-radius: 0 0 0 0; }
+.col .seg:last-child { border-radius: 4px 4px 0 0; }
+.seg:hover { filter: brightness(1.08); outline: 2px solid var(--panel); outline-offset: -2px; }
+.coltop { position: absolute; left: 50%; transform: translateX(-50%);  /* bottom: N% already sets the label's bottom edge at the bar top */ font-weight: 600; font-size: 12.5px; padding-bottom: 4px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.xlab { position: absolute; left: 52px; right: 0; bottom: 0; display: flex; justify-content: space-around; padding-inline: 8%; gap: 12%; }
+.xlab span { flex: 1; max-width: 120px; text-align: center; font-size: 12px; color: var(--ink-2); font-weight: 600; }
+.tip { position: fixed; z-index: 30; pointer-events: none; background: var(--ink); color: var(--panel); font-size: 12px; padding: 6px 9px; border-radius: 6px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.legends, .dls { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px 28px; }
+.dls { gap: 0 28px; align-items: start; }
+@media (max-width: 560px) { .legends, .dls { grid-template-columns: minmax(0,1fr); } }
+.lg h4 { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--rule); padding-bottom: 4px; }
+.lg h4 span { font-variant-numeric: tabular-nums; }
+.lg .row { display: grid; grid-template-columns: 10px minmax(0,1fr) auto auto; gap: 8px; align-items: center; font-size: 12.5px; padding: 2px 0; }
+.lg .row.zero { opacity: .45; }
+.lg .sw { width: 10px; height: 10px; border-radius: 2px; }
+.lg .t { color: var(--ink-2); }
+.lg .p { font-variant-numeric: tabular-nums; color: var(--ink-3); text-align: right; min-width: 44px; }
+.lg .d { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; min-width: 64px; }
+.dl { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 3px 14px; font-size: 12.5px; margin-top: 14px; }
+.dl dt { color: var(--ink-3); }
+.dl dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+.actuary { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+@media (max-width: 560px) { .actuary { grid-template-columns: minmax(0,1fr); } }
+.actuary .v { font-weight: 600; font-size: 14.5px; }
+
+.roles { display: flex; flex-wrap: wrap; gap: 4px; }
+.role { font-size: 10.5px; font-weight: 700; padding: 1px 6px; border-radius: 3px; white-space: nowrap; border: 1px solid currentColor; }
+.role.act { color: var(--s7); }
+.role.ia { color: var(--s1); }
+.role.im { color: var(--l2); }
+.role.pc { color: var(--s6); }
+.role.gc { color: var(--s2); }
+.role.rk { color: var(--accent); }
+.codes { font-family: var(--f-data); font-size: 11.5px; color: var(--ink-3); }
+.codes abbr { text-decoration: none; border-bottom: 1px dotted var(--ink-3); cursor: help; }
+.feesum { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--ink-2); margin-top: 6px; }
+.feesum b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.mtnote { font-size: 12.5px; color: var(--ink-2); background: var(--accent-soft); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; }
+.provblock + .mtnote { margin-top: 16px; }
+button.more { font: 600 12.5px var(--f-body); color: var(--accent); background: none; border: 1px solid var(--rule); border-radius: 6px; padding: 5px 10px; margin-top: 8px; cursor: pointer; }
+button.more:hover { background: var(--accent-soft); }
+button:focus-visible, .res:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.grp { font-size: 13px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; margin-top: 8px; display: flex; align-items: center; gap: 8px; }
+.grp span { background: var(--rule-2); color: var(--ink-2); border-radius: 10px; padding: 0 8px; font-size: 12px; letter-spacing: 0; }
+.chip.feat { background: transparent; border: 1px solid var(--rule); color: var(--ink-2); text-transform: none; letter-spacing: 0; font-weight: 600; }
+.kpi .v.sm { font-size: 19px; }
+.flowstmt { border-collapse: collapse; font-size: 14px; }
+.flowstmt td { padding: 4px 0; vertical-align: baseline; }
+.flowstmt td:nth-child(2) { text-align: right; font-variant-numeric: tabular-nums; padding-left: 24px; white-space: nowrap; }
+.flowstmt td.det { padding-left: 24px; font-size: 12.5px; color: var(--ink-2); }
+.flowstmt td.det b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.flowstmt tr.sum td:not(.det) { border-top: 1px solid var(--ink-3); padding-top: 6px; font-weight: 600; }
+@media (max-width: 720px) { .flowstmt tr:first-child td.det { display: block; padding: 0 0 4px; } .flowstmt td.det:empty { display: none; } }
+.exp { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 4px 32px; margin-top: 12px; }
+@media (max-width: 720px) { .exp { grid-template-columns: minmax(0,1fr); } }
+.er { display: grid; grid-template-columns: minmax(0,1fr) 90px auto; gap: 10px; align-items: center; font-size: 12.5px; padding: 3px 0; border-bottom: 1px solid var(--rule-2); }
+.er .t { color: var(--ink-2); }
+.er .b { height: 8px; background: var(--rule-2); border-radius: 0 4px 4px 0; overflow: hidden; }
+.er .b i { display: block; height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; }
+.er .d { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; min-width: 90px; }
+.loading { padding: 40px 20px; text-align: center; color: var(--ink-3); }
+.foot { font-size: 11.5px; color: var(--ink-3); line-height: 1.55; margin: 16px 0 0; padding-top: 10px; border-top: 1px solid var(--rule-2); }
+@media print {
+  /* Landscape letter. Page 1: sponsor summary. Each DB plan: page A = size, funding chart, cash flows with the
+     actuary beside them; then Schedule D and Schedule C each on a new page. Each DC plan starts a new page, and its
+     Schedule D and C tables each start one too. Rows never split. */
+  @page { size: letter landscape; margin: 0.45in 0.45in 0.6in; }
+  :root:root, :root[data-theme], :root:not([data-theme="light"]) {
+    --bg: #ffffff; --panel: #ffffff; --ink: #17201f; --ink-2: #4a5654; --ink-3: #6b7672;
+    --rule: #cfd5d2; --rule-2: #e4e7e5; --accent: #1d5b73; --accent-soft: #e2edf1; --hl: transparent;
+    --good: #1e7a46; --good-bg: #e3f3e8; --warn: #9a6200; --warn-bg: #fbefd6; --bad: #b23a2f; --bad-bg: #f9e3e0;
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7;
+    --l1:#26343f; --l2:#4d6274; --l3:#7a90a3; --l4:#adbfcd;
+    color-scheme: light;
+  }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: #fff; font-size: 11px; }
+  .wrap { max-width: none; padding-inline: 0; padding-block: 0; }
+  .topbar { position: static; padding-block: 0 8px; margin-bottom: 12px; }
+  .tbrow2 { display: none !important; }
+  .topbar h1 { font-size: 18px; }
+  .topbar .search, button.more, .tip, .drop { display: none !important; }
+  /* Safari/WebKit ignores forced page breaks inside flex/grid parents, so the page flow is plain block in print */
+  .wrap, .report, .panel, .dossier, .sec { display: block !important; }
+  .report > * + * { margin-top: 0; }
+  .panel { border: 0; border-radius: 0; padding: 0; background: none; }
+  .sp-head h2 { font-size: 26px; }
+  .dh h3 { font-size: 19px; }
+
+  /* page structure */
+  .grp { break-before: page; page-break-before: always; break-after: avoid; page-break-after: avoid; margin: 0 0 6px; padding-bottom: 4px; border-bottom: 2px solid var(--accent); }
+  .dossier { break-before: page; page-break-before: always; }
+  .grp + .dossier { break-before: auto; page-break-before: auto; }
+  .contd { display: block !important; break-before: page; page-break-before: always; font-size: 12px; color: var(--ink-2); padding-bottom: 6px; margin-bottom: 4px; border-bottom: 1px solid var(--rule); }
+  .contd b { color: var(--ink); font-size: 15px; }
+  /* DB page 1: actuary in a column to the right of the cash-flow reconciliation */
+  .cfact { display: grid !important; grid-template-columns: max-content minmax(0, 320px); gap: 0 72px; align-items: start; break-inside: avoid; page-break-inside: avoid; }
+  .cfact > .sec { display: block !important; }
+  .cfact .actuary { grid-template-columns: minmax(0, 1fr) !important; gap: 6px; }
+  .foot { break-inside: avoid; page-break-inside: avoid; font-size: 9.5px; }
+  .dossier.lite { break-before: auto; page-break-before: auto; margin-top: 22px; }
+  .sec { margin-top: 12px; }
+  .sec > .lab, .dh, .feesum { break-after: avoid; page-break-after: avoid; }
+  .kpis, .fx, .tot, .split, .actuary, .dh, .mtnote, tr, .kpi, .legends, .chart { break-inside: avoid; page-break-inside: avoid; }
+  thead { display: table-header-group; }
+
+  /* keep the desktop layout at paper width */
+  .split { grid-template-columns: minmax(0,3fr) minmax(0,2fr) !important; }
+  .kpis { grid-template-columns: repeat(4, minmax(0,1fr)) !important; gap: 8px; }
+  .kpis.k5 { grid-template-columns: repeat(5, minmax(0,1fr)) !important; }
+  .kpi .v { font-size: 20px; }
+  .fx { grid-template-columns: minmax(0, 360px) minmax(0, 1fr) !important; margin-top: 10px; }
+  .legends, .dls { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+  .actuary { grid-template-columns: repeat(3, minmax(0,1fr)) !important; }
+  .chart { height: 270px; } .yaxis, .plot { height: 240px; }
+  /* keep a DB plan's size, funding chart and cash flows on one page */
+  .dl { gap: 2px 10px; font-size: 10.5px; margin-top: 10px; }
+  .flowstmt { font-size: 11px; }
+  .flowstmt td { padding: 1px 0; }
+  .flowstmt td.det { font-size: 10px; }
+  .flowstmt tr.sum td:not(.det) { padding-top: 3px; }
+  .flowstmt { break-inside: avoid; page-break-inside: avoid; width: auto; }
+  table { font-size: 10px; }
+  td .mono, td.mono, td .note, td.note { font-size: inherit; }
+  td[style*="min-width"] { min-width: 0 !important; }
+  th, td { padding: 3px 5px; }
+  .chip.py, .chip.feat { font-size: 9.5px; padding: 1px 5px; }
+  .chip.filing { display: none !important; }  /* links to the filings: screen only */
+  .sdbar { display: none !important; }        /* Schedule D CSV download: screen only */
+  .tw { overflow: visible; margin-top: 6px; }
+  tr[hidden] { display: table-row !important; }
+  tr.jump:hover td { background: none; }
+}
+.contd { display: none; }
+.lockbtn { font: 600 12px var(--f-body); color: var(--ink-2); background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+.gate { position: fixed; inset: 0; z-index: 50; background: var(--bg); display: grid; place-items: center; padding: 16px; }
+.gatebox { width: 100%; max-width: 360px; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+.gatebox h2 { font-size: 20px; color: var(--accent); }
+.gatebox input[type=password] { font: 15px var(--f-body); padding: 10px 12px; border: 1px solid var(--rule); border-radius: 8px; background: var(--bg); color: var(--ink); }
+.gatebox input[type=password]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.gatebox .rem { font-size: 13px; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
+.gatebox button { font: 600 14px var(--f-body); background: var(--accent); color: var(--panel); border: 0; border-radius: 8px; padding: 10px; cursor: pointer; }
+@media print { .lockbtn, .gate { display: none !important; } }
+
+/* company list mode */
+.tbtns { display: flex; gap: 6px; justify-content: flex-end; }
+.viewtog { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--panel); }
+.viewtog button { font: 600 12px var(--f-body); color: var(--ink-2); background: none; border: 0; padding: 6px 10px; cursor: pointer; white-space: nowrap; }
+.viewtog button + button { border-left: 1px solid var(--rule); }
+.viewtog button[aria-pressed="true"] { background: var(--accent); color: var(--panel); }
+/* Summary view: sponsor summary + each DB plan's first page (size, funding, cash flows, actuary). */
+body.summary .dossier .detail, body.summary .dossier .contd, body.summary .dossier.dc, body.summary .grp.dc,
+body.summary .dossier.mt, body.summary .grp.mt { display: none !important; }
+.chip.mtc { background: var(--rule-2); color: var(--ink-2); }
+b.warn { color: var(--warn); }
+.dh .mtnote { margin-top: 10px; }
+#listres tr.jump:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+/* narrower screens: the toggles drop below the search; on phones the stamp gets its own line */
+@media (max-width: 900px) {
+  .tbrow2 { flex-wrap: wrap; }
+  .tbrow2 .search { flex-basis: 100%; }
+  .tbtns { justify-content: flex-start; flex-wrap: wrap; }
+}
+@media (max-width: 560px) {
+  .tbrow .stamp { order: 3; flex-basis: 100%; margin-left: 0; text-align: left; }
+  .tbrow .lockbtn { margin-left: auto; }
+}
+.listin h2 { font-family: var(--f-display); font-weight: 600; font-size: 24px; line-height: 1.2; margin-top: 2px; }
+.listin textarea { display: block; width: 100%; min-height: 170px; resize: vertical; margin-top: 12px; font: 13px/1.5 var(--f-data); color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; }
+.listin textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.listbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-top: 12px; }
+.btn { font: 600 13.5px var(--f-body); background: var(--accent); color: var(--panel); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+.btn.sec { background: var(--panel); color: var(--accent); border-color: var(--rule); }
+.btn:disabled { opacity: .55; cursor: progress; }
+.lsum { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; }
+.chip.mx-exact { background: var(--good-bg); color: var(--good); }
+.chip.mx-fuzzy { background: var(--warn-bg); color: var(--warn); }
+.chip.mx-picked { background: var(--accent-soft); color: var(--accent); }
+.chip.mx-none { background: var(--bad-bg); color: var(--bad); }
+.linkbtn { font: inherit; font-weight: 600; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
+.linkbtn:hover { text-decoration: underline; }
+.linkbtn.ein { font: 12.5px var(--f-data); font-weight: 400; white-space: nowrap; }
+.alt { display: block; margin-top: 5px; width: 100%; max-width: 380px; font: 12px var(--f-body); color: var(--ink-2); background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 3px 6px; }
+.back { align-self: flex-start; }
+.sdbar { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+.mtsum + .mtsum { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.mthead { margin-bottom: 10px; font-size: 14px; }
+.mthead .mono { font-size: 12px; color: var(--ink-2); margin-left: 4px; }
+.mtgrid { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 16px 40px; margin-top: 14px; align-items: start; }
+@media (max-width: 860px) { .mtgrid { grid-template-columns: minmax(0, 1fr); } }
+.lab.sub { margin-bottom: 8px; }
+.lab.sub i { font-style: normal; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--ink-3); }
+tr.me td { font-weight: 600; }
+.btn.sm { font-size: 12px; padding: 5px 10px; border-radius: 6px; }
+/* Multi-Search: search-type toggle, plan-type and asset filters, provider result blocks */
+.mshead { display: flex; align-items: center; justify-content: space-between; gap: 8px 14px; flex-wrap: wrap; }
+.msfilt { display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 14px; align-items: flex-start; }
+.msfilt fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.msfilt legend { padding: 0; margin-bottom: 5px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.msfilt legend i { font-style: normal; text-transform: none; letter-spacing: 0; }
+.msrow { display: flex; align-items: center; gap: 8px; }
+.msrow span { font-size: 12.5px; color: var(--ink-3); }
+.msfilt label { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px var(--f-body); color: var(--ink); cursor: pointer; margin-right: 10px; }
+.msfilt input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); }
+.msfilt input[type=text] { width: 96px; font: 13.5px var(--f-body); color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 8px; font-variant-numeric: tabular-nums; }
+.msfilt input[type=text]:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.msfilt fieldset:disabled { opacity: .45; }
+.msroles { flex-basis: 100%; }
+.msroles .msrow { flex-wrap: wrap; gap: 6px 4px; }
+.msroles .linkbtn { font-size: 12.5px; margin-left: 6px; }
+.provhelp { margin-top: 12px; border: 1px solid var(--rule); border-radius: 8px; padding: 10px 14px; background: var(--bg); font-size: 13px; color: var(--ink-2); }
+.provhelp summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+.provhelp p { margin: 8px 0 0; line-height: 1.5; }
+.provhelp ul { margin: 6px 0 2px; padding-left: 20px; line-height: 1.5; }
+.firmchips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip.firmchip { cursor: pointer; border: 1px solid var(--rule); background: var(--panel); color: var(--accent); text-transform: none; letter-spacing: 0; font-weight: 600; font-size: 12px; padding: 3px 9px; }
+.chip.firmchip:hover { border-color: var(--accent); }
+.pvblock { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.pvblock h3 { font-family: var(--f-display); font-size: 18px; font-weight: 600; }
+.pvblock h3 .note { font-family: var(--f-body); font-size: 12.5px; font-weight: 400; }
+.pvnames summary { cursor: pointer; font-size: 12.5px; color: var(--ink-2); margin: 4px 0 6px; }
+#listres td.mono { white-space: nowrap; }
+.pvnames ul { columns: 2 260px; font-size: 12px; color: var(--ink-2); margin: 0 0 8px; padding-left: 18px; }
+tr.dup td { color: var(--ink-3); }
+@media print { .listin, .listbar, .alt, .back, .tbtns { display: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="topbar">
+    <div class="tbrow">
+      <h1>5500 <span>Sponsor Lookup</span></h1>
+      <div class="stamp" id="stamp">Locked</div>
+      <button type="button" id="lock" class="lockbtn" hidden title="Forget the password on this device">Lock</button>
+    </div>
+    <div class="tbrow2">
+    <div class="search" role="combobox" aria-expanded="false" aria-owns="drop" aria-haspopup="listbox" id="combo">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
+      <input id="q" type="search" autocomplete="off" spellcheck="false" aria-label="Search plan sponsor by name or EIN" aria-autocomplete="list" aria-controls="drop" placeholder="Search plan sponsor by name or EIN">
+      <div class="drop" id="drop" role="listbox" hidden></div>
+    </div>
+    <div class="tbtns">
+      <div class="viewtog" id="viewtog" role="group" aria-label="View" hidden>
+        <button type="button" id="viewone" aria-pressed="true" title="One sponsor's plans in detail">Single Company</button>
+        <button type="button" id="listbtn" aria-pressed="false" title="Search a list of plan sponsors or service providers, or screen sponsors by plan assets">Multi-Search</button>
+      </div>
+      <div class="viewtog" id="depthtog" role="group" aria-label="Level of detail" hidden>
+        <button type="button" id="vsum" aria-pressed="false" title="Sponsor summary and each DB plan's funding page">Summary</button>
+        <button type="button" id="vdet" aria-pressed="true" title="Every plan with all schedules">Detailed</button>
+      </div>
+    </div>
+    </div>
+  </header>
+
+  <main class="report" id="report"><div class="panel loading">Loading sponsors…</div></main>
+</div>
+<div class="tip" id="tip" hidden></div>
+<div class="gate" id="gate" hidden>
+  <form id="gateform" class="gatebox" autocomplete="off">
+    <h2>5500 Sponsor Lookup</h2>
+    <p class="note">This dashboard is password protected.</p>
+    <label class="lab" for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" required>
+    <label class="rem"><input type="checkbox" id="remember" checked> Remember on this device</label>
+    <button type="submit">Unlock</button>
+    <p class="note" id="gatemsg" role="status"></p>
+  </form>
+</div>
+<style id="pagefoot"></style>
+
+<script>
+(() => {
+const IDX_URL = "data/index.enc";
+const SHARD_URL = i => `data/shards/${String(i).padStart(2, "0")}.enc`;
+
+const SERVICE = {"10":"Accounting (including auditing)","11":"Actuarial","12":"Claims processing","13":"Contract administrator","14":"Plan administrator","15":"Recordkeeping and information management","16":"Consulting (general)","17":"Consulting (pension)","18":"Custodial (other than securities)","19":"Custodial (securities)","20":"Trustee (individual)","21":"Trustee (bank, trust company, or similar)","22":"Insurance agents and brokers","23":"Insurance services","24":"Trustee (discretionary)","25":"Trustee (directed)","26":"Investment advisory (participants)","27":"Investment advisory (plan)","28":"Investment management","29":"Legal","30":"Employee (plan)","31":"Named fiduciary","32":"Real estate brokerage","33":"Securities brokerage","34":"Valuation (appraisals, etc.)","35":"Employee (plan sponsor)","36":"Copying and duplicating","37":"Participant loan processing","38":"Participant communication","40":"Foreign entity","49":"Other services","50":"Direct payment from the plan","51":"Investment management fees paid directly by plan","52":"Investment management fees paid indirectly by plan","53":"Insurance brokerage commissions and fees","54":"Sales loads","55":"Other commissions","56":"Non-monetary compensation","57":"Redemption fees","58":"Product termination fees","59":"Shareholder servicing fees","60":"Sub-transfer agency fees","61":"Finders'/placement fees","62":"Float revenue","63":"Distribution (12b-1) fees","64":"Recordkeeping fees","65":"Account maintenance fees","66":"Insurance mortality and expense charge","67":"Other insurance wrap fees","68":"Soft dollars commissions","70":"Consulting fees","71":"Securities brokerage commissions and fees","72":"Other investment fees and expenses","73":"Other insurance fees and expenses","99":"Other fees"};
+const ROLES = [
+  { key: "act", label: "Actuary", codes: ["11"] },
+  { key: "ia",  label: "Investment advisor", codes: ["27", "26"] },
+  { key: "im",  label: "Investment manager", codes: ["28"] },
+  { key: "pc",  label: "Pension consultant", codes: ["17"] },
+  { key: "gc",  label: "General consultant", codes: ["16"] },
+  { key: "rk",  label: "Recordkeeper", codes: ["15", "64"] },
+];
+const ALLOC = [
+  ["PUBLIC_EQUITY", "Public equity", "--s1"], ["PRIVATE_EQUITY", "Private equity", "--s2"],
+  ["IG_DEBT", "Investment-grade debt", "--s3"], ["HIGH_YIELD", "High-yield debt", "--s4"],
+  ["REAL_ASSETS", "Real assets", "--s5"], ["CASH", "Cash & equivalents", "--s6"], ["OTHER_ASSETS", "Other", "--s7"],
+];
+// Schedule R Part VI line 25: average duration of investment-grade + high-yield debt (four boxes).
+const DURATION = {"1":"0–5 years","2":"5–10 years","3":"10–15 years","4":"15 years or more"};
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm = s => String(s || "").toUpperCase().replace(/&/g, " AND ").replace(/[^A-Z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
+function money(v, digits) {
+  if (v === null || v === undefined) return "—";
+  const a = Math.abs(v), sgn = v < 0 ? "−" : "";
+  if (a >= 1e9) return `${sgn}$${(a / 1e9).toFixed(digits ?? 2)}B`;
+  if (a >= 1e6) return `${sgn}$${(a / 1e6).toFixed(digits ?? 1)}M`;
+  if (a >= 1e3) return `${sgn}$${(a / 1e3).toFixed(0)}K`;
+  return `${sgn}$${a.toFixed(0)}`;
+}
+// One unit for a whole block of related figures: $M once the largest reaches $1M, else $K.
+// Negatives in parentheses (accounting style).
+function unitFmt(big) {
+  const [div, suf] = Math.abs(big) >= 1e6 ? [1e6, "M"] : [1e3, "K"];
+  return (v, digits = 1) => {
+    if (v === null || v === undefined) return "—";
+    const t = "$" + (Math.abs(v) / div).toLocaleString("en-US", {minimumFractionDigits: digits, maximumFractionDigits: digits}) + suf;
+    return v < 0 ? `(${t})` : t;
+  };
+}
+const dollars = v => v === null || v === undefined ? "—" : "$" + Math.round(v).toLocaleString("en-US");
+const int = v => v === null || v === undefined ? "—" : Math.round(v).toLocaleString("en-US");
+const pct = (v, d = 1) => v === null || v === undefined || !isFinite(v) ? "—" : `${v.toFixed(d)}%`;
+const fmtEIN = e => e && e.length === 9 ? `${e.slice(0, 2)}-${e.slice(2)}` : (e || "");
+const title = s => String(s || "").toLowerCase().replace(/\b([a-z])/g, m => m.toUpperCase()).replace(/\b(Llc|Lp|Llp|Inc|Usa|Ibew|Ii|Iii|Pc|Na|Us|Ua|Dba|Of|And|The|For)\b/g, w => ({Llc:"LLC",Lp:"LP",Llp:"LLP",Inc:"Inc",Usa:"USA",Ibew:"IBEW",Ii:"II",Iii:"III",Pc:"PC",Na:"NA",Us:"US",Ua:"UA",Dba:"DBA",Of:"of",And:"and",The:"the",For:"for"}[w])).replace(/^the/, "The");
+
+// Data files are gzip-compressed JSON, base64-encoded so they can be served as text.
+// ---------- encrypted data ----------
+// Every data file is AES-256-GCM encrypted (12-byte nonce + ciphertext); the key is derived from the
+// password with PBKDF2-SHA256. data/config.json holds only the salt, iteration count and a check value.
+let KEY = null, CONF = null;
+const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pw) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64d(CONF.salt), iterations: CONF.iter, hash: "SHA-256" },
+    base, { name: "AES-GCM", length: 256 }, true, ["decrypt"]);
+}
+async function decryptBytes(buf, key) {
+  const b = new Uint8Array(buf);
+  return new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: b.slice(0, 12) }, key || KEY, b.slice(12)));
+}
+async function checkKey(key) {
+  try { const t = new TextDecoder().decode(await decryptBytes(b64d(CONF.check), key)); return t === "5500-ok"; }
+  catch (e) { return false; }
+}
+async function loadGz(url) {
+  const res = await fetch(url, { cache: "no-cache" });
+  if (!res.ok) throw new Error(`${url} returned ${res.status}`);
+  const plain = await decryptBytes(await res.arrayBuffer());
+  const stream = new Blob([plain]).stream().pipeThrough(new DecompressionStream("gzip"));
+  return JSON.parse(await new Response(stream).text());
+}
+function unlock() {
+  return new Promise(async resolve => {
+    CONF = await (await fetch("data/config.json", { cache: "no-cache" })).json();
+    try {
+      const saved = localStorage.getItem("k5500:" + CONF.salt);
+      if (saved) {
+        const key = await crypto.subtle.importKey("raw", b64d(saved), { name: "AES-GCM" }, true, ["decrypt"]);
+        if (await checkKey(key)) { KEY = key; return resolve(); }
+        localStorage.removeItem("k5500:" + CONF.salt);
+      }
+    } catch (e) {}
+    const gate = $("#gate"); gate.hidden = false; $("#pw").focus();
+    $("#gateform").addEventListener("submit", async e => {
+      e.preventDefault();
+      $("#gatemsg").textContent = "Checking…";
+      const key = await deriveKey($("#pw").value);
+      if (!(await checkKey(key))) { $("#gatemsg").textContent = "That password isn’t right. Try again."; $("#pw").select(); return; }
+      KEY = key;
+      if ($("#remember").checked) {
+        try { const raw = new Uint8Array(await crypto.subtle.exportKey("raw", key)); localStorage.setItem("k5500:" + CONF.salt, btoa(String.fromCharCode(...raw))); } catch (e) {}
+      }
+      gate.hidden = true; resolve();
+    });
+  });
+}
+function lockOut() {
+  try { Object.keys(localStorage).filter(k => k.startsWith("k5500:")).forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  location.reload();
+}
+
+let META, ROWS, NORM, current = null, lastEin = null;   // lastEin: sponsor the Single company view returns to
+function setView(list) {
+  $("#viewone").setAttribute("aria-pressed", list ? "false" : "true");
+  $("#listbtn").setAttribute("aria-pressed", list ? "true" : "false");
+  $("#depthtog").hidden = list;
+}
+const DEPTH_KEY = "v5500:summary";
+function setDepth(summary) {
+  document.body.classList.toggle("summary", summary);
+  $("#vsum").setAttribute("aria-pressed", summary ? "true" : "false");
+  $("#vdet").setAttribute("aria-pressed", summary ? "false" : "true");
+  try { localStorage.setItem(DEPTH_KEY, summary ? "1" : "0"); } catch (e) {}
+}
+function goSponsor(ein) {
+  const r = ROWS.find(x => x[0] === ein);
+  if (r) $("#q").value = title(r[1]);
+  openSponsor(ein);
+  window.scrollTo(0, 0);
+}
+function openSingle() {
+  if (lastEin) return goSponsor(lastEin);
+  current = null;
+  setView(false);
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  document.title = "5500 Sponsor Lookup";
+  $("#report").innerHTML = `<div class="panel loading">Search for a plan sponsor above to see its plans.</div>`;
+  $("#q").focus();
+}
+const shardCache = new Map();
+const shardOf = ein => { const n = parseInt(ein, 10); return isNaN(n) ? 0 : n % META.nshard; };
+function getShard(i) {
+  if (!shardCache.has(i)) shardCache.set(i, loadGz(SHARD_URL(i)).catch(e => { shardCache.delete(i); throw e; }));
+  return shardCache.get(i);
+}
+
+function provTable(raw) {
+  const list = raw.map(x => ({ ...x, roles: ROLES.filter(r => r.codes.some(c => (x.cd || []).includes(c))) }))
+    .sort((a, b) => ((b.dc || 0) + (b.ic || 0)) - ((a.dc || 0) + (a.ic || 0)));
+  const sumD = list.reduce((s, x) => s + (x.dc || 0), 0);
+  const sumI = list.reduce((s, x) => s + (x.ic || 0), 0);
+  // Indirect: the 2h amount when given; otherwise say why there is none.
+  const showInd = list.some(x => x.ic > 0);  // column only when some provider reports an indirect amount
+  const ind = x => x.ic ? `<b>${dollars(x.ic)}</b>`
+    : x.ici && x.eic ? `<span class="note" title="Eligible indirect compensation is disclosed in Schedule C Part I, Item 1, without a dollar amount">Eligible indirect</span>`
+    : x.ici ? `<span class="note" title="Indirect compensation reported, but no amount on line 2h">Not stated</span>` : "—";
+  const byRole = ROLES.map(r => [r, list.filter(x => x.roles.includes(r))]).filter(x => x[1].length);
+  const LIMIT = 12;
+  return `<div class="provblock">
+    ${byRole.length ? `<div class="feesum">${byRole.map(([r, xs]) => `<span><span class="role ${r.key}">${r.label}</span> ${xs.map(x => esc(title(x.nm))).join(", ")}</span>`).join("")}</div>` : `<div class="feesum note">No provider reports actuarial, investment advisory, investment management, consulting or recordkeeping codes.</div>`}
+    <div class="tw"><table>
+      <thead><tr><th>Provider</th><th>Role</th><th>Service codes</th><th class="n">Direct compensation</th>${showInd ? `<th class="n">Indirect compensation</th>` : ""}</tr></thead>
+      <tbody>${list.map((x, i) => `<tr${i >= LIMIT ? " hidden" : ""}>
+        <td style="min-width:180px">${esc(title(x.nm))}${x.rel && x.rel !== "NONE" ? `<div class="note">${esc(title(x.rel))}</div>` : ""}</td>
+        <td>${x.roles.length ? `<div class="roles">${x.roles.map(r => `<span class="role ${r.key}">${r.label}</span>`).join("")}</div>` : `<span class="note">Other</span>`}</td>
+        <td class="codes">${(x.cd || []).map(c => `<abbr title="${esc(SERVICE[c] || "Unknown code")}">${c}</abbr>`).join(" ")}</td>
+        <td class="n"><b>${dollars(x.dc)}</b></td>
+        ${showInd ? `<td class="n">${ind(x)}</td>` : ""}
+      </tr>`).join("")}</tbody>
+      <tfoot><tr><td colspan="3">Total, ${list.length} provider${list.length === 1 ? "" : "s"}</td><td class="n">${dollars(sumD)}</td>${showInd ? `<td class="n">${dollars(sumI)}</td>` : ""}</tr></tfoot>
+    </table></div>
+    ${list.length > LIMIT ? `<button class="more" type="button">Show all ${list.length} providers</button>` : ""}</div>`;
+}
+
+// ---------- search ----------
+function search(q) {
+  const nq = norm(q);
+  const digits = q.replace(/\D/g, "");
+  const hits = [];
+  if (!nq) return { hits, toks: [] };
+  const toks = nq.split(" ");
+  for (let i = 0; i < ROWS.length; i++) {
+    const n = NORM[i];
+    let ok = true;
+    for (const t of toks) { if (n.indexOf(t) === -1) { ok = false; break; } }
+    if (!ok && digits.length >= 4 && ROWS[i][0].includes(digits)) ok = true;
+    if (ok) hits.push(i);
+  }
+  hits.sort((a, b) => (ROWS[b][5] + ROWS[b][7]) - (ROWS[a][5] + ROWS[a][7]));
+  return { hits, toks };
+}
+function highlight(name, toks) {
+  let s = esc(name);
+  for (const t of toks) {
+    if (t.length < 2) continue;
+    s = s.replace(new RegExp(`(${t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "ig"), "<mark>$1</mark>");
+  }
+  return s;
+}
+let active = -1;
+function showDrop(open) {
+  $("#drop").hidden = !open;
+  $("#combo").setAttribute("aria-expanded", open ? "true" : "false");
+}
+function renderResults() {
+  const q = $("#q").value;
+  const drop = $("#drop");
+  active = -1;
+  if (!q.trim()) { showDrop(false); return; }
+  const { hits, toks } = search(q);
+  if (!hits.length) {
+    drop.innerHTML = `<div class="empty">No sponsor matches “${esc(q)}”. Try fewer words or part of the name.</div>`;
+    showDrop(true); return;
+  }
+  const show = hits.slice(0, 50);
+  drop.innerHTML = `<div class="cnt">${hits.length.toLocaleString()} sponsor${hits.length === 1 ? "" : "s"}${hits.length > 50 ? ", showing the 50 largest" : ""} · each EIN is listed separately</div>` +
+    show.map(i => {
+      const r = ROWS[i];
+      const bits = [];
+      if (r[4]) bits.push(`<span>DB <b>${r[4]}</b> · ${money(r[5])}</span>`);
+      if (r[6]) bits.push(`<span>DC <b>${r[6]}</b> · ${money(r[7])}</span>`);
+      return `<button class="res" role="option" data-ein="${r[0]}" tabindex="-1">
+        <div class="nm">${highlight(r[1], toks)}</div>
+        <div class="meta"><span>${esc(title(r[2]))}${r[3] ? ", " + esc(r[3]) : ""}</span><span class="mono">${fmtEIN(r[0])}</span>${bits.join("")}</div>
+      </button>`;
+    }).join("");
+  showDrop(true);
+}
+function moveActive(step) {
+  const items = [...document.querySelectorAll("#drop .res")];
+  if (!items.length) return;
+  active = (active + step + items.length) % items.length;
+  items.forEach((b, i) => b.classList.toggle("on", i === active));
+  items[active].scrollIntoView({ block: "nearest" });
+}
+function choose(ein) {
+  showDrop(false);
+  const r = ROWS.find(x => x[0] === ein);
+  if (r) $("#q").value = title(r[1]);
+  $("#q").blur();
+  openSponsor(ein);
+}
+
+// ---------- sponsor report ----------
+async function openSponsor(ein) {
+  current = lastEin = ein;
+  setView(false);
+  try { history.replaceState(null, "", "#e" + ein); } catch (e) {}
+  const rep = $("#report");
+  rep.innerHTML = `<div class="panel loading">Loading sponsor…</div>`;
+  let shard;
+  try { shard = await getShard(shardOf(ein)); }
+  catch (e) { rep.innerHTML = `<div class="panel loading">Couldn’t load this sponsor’s plan data (${esc(e.message)}). Reload the page to try again.</div>`; return; }
+  if (current !== ein) return;
+  MTS = shard.mts || {};
+  const C = META.plan_cols;
+  const plans = shard.plans.filter(p => p[0] === ein).map(p => Object.fromEntries(C.map((c, i) => [c, p[i]])));
+  const idxRow = ROWS.find(r => r[0] === ein);
+  const db = plans.filter(p => p.t === "DB" || p.t === "DB+DC").sort((a, b) => (b.b ?? b.e ?? 0) - (a.b ?? a.e ?? 0));
+  const dc = plans.filter(p => p.t === "DC").sort((a, b) => (b.e ?? b.b ?? 0) - (a.e ?? a.b ?? 0));
+  const trusts = sponsorTrusts([...db, ...dc], shard.det);
+  const otherNames = [...new Set(plans.map(p => p.sp).filter(Boolean))];
+  const sum = (arr, k) => arr.reduce((s, p) => s + (p[k] || 0), 0);
+  const yrs = arr => [...new Set(arr.map(p => p.y))].sort((a, b) => b - a);
+
+  const ftOf = p => { const d = shard.det[`${p.ein}-${p.pn}`]; return d && d.sb && d.sb.ft ? d.sb.ft : null; };
+  const fsClass = v => v == null || !isFinite(v) ? "" : v >= 100 ? "good" : v >= 80 ? "warn" : "bad";
+  const totBox = (kind, arr) => {
+    const long = kind === "DB" ? "Defined benefit" : "Defined contribution";
+    if (!arr.length) return `<div class="tot"><div class="k"><span class="chip ${kind.toLowerCase()}">${kind}</span><span class="note">No ${long.toLowerCase()} plans on file</span></div></div>`;
+    return `<div class="tot">
+      <div class="k"><span class="chip ${kind.toLowerCase()}">${kind}</span><span class="lab" style="letter-spacing:.04em">${long}</span><span class="note" style="margin-left:auto">Plan year ${yrs(arr).join(" / ")}</span></div>
+      <div class="v">${arr.length}<small>plan${arr.length === 1 ? "" : "s"}</small></div>
+      <div class="v">${money(sum(arr, "b"))}<small>assets, BOY</small></div>
+      <div class="v">${money(sum(arr, "e"))}<small>assets, EOY</small></div>
+      ${kind === "DB" ? (() => {
+        const withFT = arr.filter(p => ftOf(p) && p.b != null);
+        const ftTot = withFT.reduce((s, p) => s + ftOf(p), 0), mvTot = withFT.reduce((s, p) => s + p.b, 0);
+        const fs = ftTot ? mvTot / ftTot * 100 : null;
+        const partial = withFT.length && withFT.length < arr.length ? ` (${withFT.length} of ${arr.length} plans)` : "";
+        return `<div class="v">${ftTot ? money(ftTot) : "—"}<small>funding target, BOY${partial}</small></div>
+      <div class="v"><span class="fs ${fsClass(fs)}">${pct(fs)}</span><small>funded status, MV/FT${partial}</small></div>`;
+      })() : ""}
+    </div>`;
+  };
+  const planRow = p => `<tr class="jump" data-jump="${p.ein}-${p.pn}" title="Jump to plan detail">
+      <td><span class="chip ${p.t === "DC" ? "dc" : "db"}">${p.t}</span></td>
+      <td style="min-width:240px">${esc(title(p.pl))}</td>
+      <td class="mono" style="white-space:nowrap">${fmtEIN(p.ein)} / ${p.pn}</td>
+      <td>${pyChip(p)}</td>
+      <td class="n">${money(p.b)}</td>
+      <td class="n">${money(p.e)}</td>
+      <td class="n">${p.t === "DC" ? "" : money(ftOf(p))}</td>
+      <td class="n">${p.t === "DC" ? "" : (ftOf(p) && p.b != null ? `<span class="fs ${fsClass(p.b / ftOf(p) * 100)}">${pct(p.b / ftOf(p) * 100)}</span>` : "—")}</td>
+    </tr>`;
+
+  let html = (msHasResults() ? `<button type="button" class="btn sec back" id="tolist">← Back to Multi-Search</button>` : "") + `<section class="panel">
+    <div class="sp-head">
+      <div class="lab">Plan sponsor</div>
+      <h2>${esc(title(idxRow ? idxRow[1] : ein))}</h2>
+      <div class="sp-sub"><span>EIN <span class="mono">${fmtEIN(ein)}</span></span>${idxRow && idxRow[2] ? `<span>${esc(title(idxRow[2]))}, ${esc(idxRow[3] || "")}</span>` : ""}<span>${plans.length} retirement plan${plans.length === 1 ? "" : "s"}</span></div>
+      ${otherNames.length ? `<div class="aka">Also filed as: ${otherNames.map(n => esc(title(n))).join(" · ")}</div>` : ""}
+    </div>
+    <div class="split">${totBox("DB", db)}${totBox("DC", dc)}</div>
+    <div class="tw"><table>
+      <thead><tr><th>Type</th><th>Plan</th><th>EIN / PN</th><th>Filing used</th><th class="n">Assets BOY</th><th class="n">Assets EOY</th><th class="n">Funding target BOY</th><th class="n">Funded (MV/FT)</th></tr></thead>
+      <tbody>${[...db, ...dc].map(planRow).join("")}${trusts.map(x => `<tr class="jump" data-jump="mt-${esc(x.ack)}" title="Jump to the master trust">
+      <td><span class="chip mtc" title="Master trust investment account">MT</span></td>
+      <td style="min-width:240px">${esc(title(x.t.nm))}<div class="note">master trust for ${x.plans.length} of these plans${x.t.y < Math.max(...x.plans.map(z => z.p.y)) ? ` · plan year ${Math.max(...x.plans.map(z => z.p.y))} filing not yet available, ${x.t.y} shown` : ""}</div></td>
+      <td class="mono" style="white-space:nowrap">${fmtEIN(x.t.ein)} / ${esc(x.t.pn)}</td>
+      <td>${pyChip({ y: x.t.y, pye: x.t.pye })}</td>
+      <td class="n">${money(x.t.b)}</td>
+      <td class="n">${money(x.t.e)}</td>
+      <td class="n"></td><td class="n"></td>
+    </tr>`).join("")}</tbody>
+    </table></div>
+    <p class="foot">Each plan uses its most recent filing in the warehouse (plan year ${META.years.join(", then ")}); the tag on each plan shows the plan year and plan year end. Assets are Schedule H (Schedule I for small plans) net assets at market value: total assets less liabilities such as payables, the basis on which the cash-flow statement reconciles beginning to end of year (total assets are used if a plan reports no net figure). Funded status is beginning-of-year market value of assets divided by the Schedule SB funding target, with no credit-balance or other AFTAP adjustments. Assets by class apply the Schedule R Part VI allocation percentages to that market value. Schedule C lists only providers paid $5,000 or more. Direct compensation is shown for every provider; an indirect compensation column appears when at least one provider reports an indirect amount (eligible indirect compensation is disclosed without a dollar amount); when a plan invests through a master trust and has no Schedule C of its own, its providers are those on the master trust's Schedule C, shown in that trust's section. Each master trust a sponsor's plans invest through has its own section (MT rows above): the trust's own Form 5500, with its net assets, cash flows, participating plans and each one's interest, Schedule D and Schedule C. Roles are inferred from the DOL service codes each provider reports (11 actuarial, 26/27 investment advisory, 28 investment management, 17 pension consulting, 16 general consulting, 15 or 64 recordkeeping). Schedule D Part I lists the plan’s interests at year end in common/collective trusts, pooled separate accounts, master trusts and 103-12 investment entities; the manager is the entity’s sponsor as reported. The Schedule D table compares those interests with total assets (before liabilities); the amount not in Schedule D is total assets less those interests: investments held directly (stocks, bonds, mutual funds, insurance contracts) plus receivables and cash.</p>
+  </section>`;
+  if (db.length) html += `<h2 class="grp">Defined benefit plans <span>${db.length}</span></h2>` + db.map(p => dossier(p, shard.det[`${p.ein}-${p.pn}`])).join("");
+  if (dc.length) html += `<h2 class="grp dc">Defined contribution plans <span>${dc.length}</span></h2>` + dc.map(p => dcDossier(p, shard.det[`${p.ein}-${p.pn}`])).join("");
+  if (trusts.length) html += `<h2 class="grp mt">Master trusts <span>${trusts.length}</span></h2>` + trusts.map(mtDossier).join("");
+  rep.innerHTML = html;
+  const cssStr = t => '"' + String(t).replace(/["\\]/g, "") + '"';
+  $("#pagefoot").textContent = `@media print { @page {
+    @bottom-left { content: ${cssStr(title(idxRow ? idxRow[1] : ein) + " · EIN " + fmtEIN(ein) + " · Form 5500 data, built " + META.built)}; font: 9px Arial, sans-serif; color: #6b7672; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 9px Arial, sans-serif; color: #6b7672; } } }`;
+  document.title = `${title(idxRow ? idxRow[1] : ein)} — Form 5500 summary`;
+  $("#tolist")?.addEventListener("click", openList);
+  rep.querySelectorAll("tr.jump").forEach(tr => tr.addEventListener("click", () => {
+    const el = document.getElementById("p" + tr.dataset.jump);
+    if (el && !el.offsetParent) setDepth(false);
+    if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  }));
+  rep.querySelectorAll("button.more").forEach(b => b.addEventListener("click", () => {
+    b.closest(".provblock").querySelectorAll("tr[hidden]").forEach(tr => tr.hidden = false);
+    b.remove();
+  }));
+}
+
+function pyChip(p) {
+  const isNew = p.y === META.years[0];
+  return `<span class="chip py ${isNew ? "new" : ""}">Plan year ${p.y} · PYE ${esc(p.pye || "—")}</span>`;
+}
+function fundedStatus(v) {
+  if (v === null || v === undefined || !isFinite(v)) return "";
+  const cls = v >= 100 ? "good" : v >= 80 ? "warn" : "bad";
+  const lbl = v >= 100 ? "Surplus" : v >= 80 ? "80–100% funded" : "Below 80% funded";
+  return `<span class="status ${cls}">${lbl}</span>`;
+}
+function niceStep(max) {
+  const raw = max / 4, mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / mag;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * mag;
+}
+
+// FT by participant group vs. MV by asset class, two stacked columns on one $ scale
+function fundingChart(p, d) {
+  const sb = d.sb;
+  const ftParts = [["Retirees & beneficiaries", sb.ftr, "--l1"], ["Terminated vested", sb.ftt, "--l2"], ["Active, vested", sb.ftav, "--l3"], ["Active, non-vested", sb.ftan, "--l4"]];
+  const ftSum = ftParts.reduce((s, x) => s + (x[1] || 0), 0);
+  const ft = sb.ft || ftSum;
+  const mv = p.b || 0;
+  let mvParts;
+  if (d.alloc) {
+    const tot = ALLOC.reduce((s, [k]) => s + (d.alloc[k] || 0), 0) || 100;
+    mvParts = ALLOC.map(([k, l, c]) => [l, mv * (d.alloc[k] || 0) / tot, c, d.alloc[k] || 0]);
+  } else {
+    mvParts = [["Total assets (no Schedule R allocation)", mv, "--s1", null]];
+  }
+  const top = Math.max(ft, mv) || 1;
+  const m = unitFmt(top);  // one unit across the chart and both legends
+  const step = niceStep(top * 1.08);
+  const ymax = Math.ceil(top * 1.08 / step) * step;
+  const ticks = []; for (let v = 0; v <= ymax + 1; v += step) ticks.push(v);
+  const segs = (parts, total, label) => parts.filter(x => x[1] > 0).map(x =>
+    `<div class="seg" style="height:max(1px, calc(${x[1] / ymax * 100}% - 2px));background:var(${x[2]})" data-tip="${esc(label)} · ${esc(x[0])}: ${m(x[1])} (${pct(x[1] / total * 100)})"></div>`).join("");
+  const ftH = ft / ymax * 100, mvH = mv / ymax * 100;
+  const chart = `<div class="chart" role="img" aria-label="Funding target ${m(ft)} by participant group versus market value ${m(mv)} by asset class">
+      <div class="yaxis">${ticks.map(v => `<span style="bottom:${v / ymax * 100}%">${m(v, 0)}</span>`).join("")}</div>
+      <div class="plot">
+        ${ticks.map(v => `<div class="grid" style="bottom:${v / ymax * 100}%"></div>`).join("")}
+        <div class="cols">
+          <div class="col"><div class="coltop" style="bottom:${ftH}%">${m(ft)}</div>${ftSum ? segs(ftParts, ftSum, "Funding target") : `<div class="seg" style="height:${ftH}%;background:var(--l2)" data-tip="Funding target: ${m(ft)}"></div>`}</div>
+          <div class="col"><div class="coltop" style="bottom:${mvH}%">${m(mv)}</div>${segs(mvParts, mv || 1, "Market value")}</div>
+        </div>
+      </div>
+      <div class="xlab"><span>Funding target</span><span>Market value</span></div>
+    </div>`;
+  const lgFT = `<div class="lg"><h4>Funding target, BOY <span>${m(ft)}</span></h4>${ftParts.map(x => `<div class="row ${x[1] ? "" : "zero"}"><span class="sw" style="background:var(${x[2]})"></span><span class="t">${x[0]}</span><span class="p">${ftSum ? pct((x[1] || 0) / ftSum * 100) : "—"}</span><span class="d">${m(x[1] || 0)}</span></div>`).join("")}</div>`;
+  const lgMV = `<div class="lg"><h4>Market value, BOY <span>${m(mv)}</span></h4>${mvParts.map(x => `<div class="row ${x[1] ? "" : "zero"}"><span class="sw" style="background:var(${x[2]})"></span><span class="t">${x[0]}</span><span class="p">${x[3] == null ? "" : pct(x[3])}</span><span class="d">${m(x[1])}</span></div>`).join("")}</div>`;
+  // Details sit under the legend they relate to: funding items (Schedule SB) left, asset items right.
+  const dl = `<div class="dls"><dl class="dl">
+      ${sb.nca != null ? `<dt>Target normal cost, excl. expenses</dt><dd>${dollars(sb.nca)}</dd>` : ""}
+      ${sb.nce != null ? `<dt>Expense load</dt><dd>${dollars(sb.nce)}</dd>` : ""}
+      ${sb.nc != null ? `<dt>Target normal cost, total</dt><dd>${dollars(sb.nc)}</dd>` : ""}
+      ${sb.eir != null ? `<dt>Effective interest rate</dt><dd>${pct(sb.eir, 2)}</dd>` : ""}
+      ${sb.vd ? `<dt>Valuation date</dt><dd>${esc(sb.vd)}</dd>` : ""}
+    </dl><dl class="dl">
+      ${d.dur ? `<dt>Fixed income duration</dt><dd>${esc(DURATION[d.dur] || "Code " + d.dur)}</dd>` : ""}
+      <dt>Allocation source</dt><dd>${d.alloc ? "Schedule R Part VI percentages, applied to BOY market value" : "Not reported. Schedule R Part VI is required only for DB plans with 1,000+ participants"}</dd>
+    </dl></div>`;
+  return `<div class="fx">${chart}<div><div class="legends">${lgFT}${lgMV}</div>${dl}</div></div>`;
+}
+
+
+const FEATURES = {
+  "1C": "Cash balance", "1E": "401(h) account", "1I": "Frozen",
+  "2J": "401(k)", "2K": "401(m) match", "2L": "403(b)(1) annuity", "2M": "403(b)(7)", "2E": "Profit-sharing",
+  "2C": "Money purchase", "2B": "Target benefit", "2A": "Age/service weighted", "2D": "Offset plan", "2I": "Stock bonus",
+  "2O": "ESOP", "2P": "Leveraged ESOP", "2Q": "S-corp ESOP", "2S": "Auto-enrollment", "2T": "QDIA default",
+  "2R": "Brokerage window", "2F": "404(c)", "2G": "Fully participant-directed", "2H": "Partly participant-directed",
+};
+// The filing as submitted (all schedules), from the DOL's public EFAST2 store. The path is
+// the receipt date, which is the ACK ID's first eight digits; the same address the DOL's
+// own Form 5500 Search opens.
+const filingLink = (ack, label = "Form 5500 PDF", tip = "Open the Form 5500 as filed") => /^\d{8}/.test(ack || "")
+  ? `<a class="chip filing" href="https://efast2-filings-public.s3.amazonaws.com/prd/${ack.slice(0, 4)}/${ack.slice(4, 6)}/${ack.slice(6, 8)}/${encodeURIComponent(ack)}.pdf" target="_blank" rel="noopener" title="${esc(tip)} (PDF, from the DOL's EFAST2 public filings)">${esc(label)} ↗</a>` : "";
+// The filing shown and the one for the plan year before it, each labelled with its plan year.
+const filingLinks = (y, ack, prior) => filingLink(ack, `${y} Form 5500`, `Open the plan year ${y} Form 5500 as filed`)
+  + (prior ? filingLink(prior[1], `${prior[0]} Form 5500`, `Open the plan year ${prior[0]} Form 5500 (prior year) as filed`) : "");
+function featureTags(cd) {
+  const codes = String(cd || "").match(/[12][A-Z]/g) || [];
+  return [...new Set(codes)].filter(c => FEATURES[c]).map(c => `<span class="chip feat" title="Form 5500 line 8a code ${c}">${FEATURES[c]}</span>`).join("");
+}
+
+// A plan with no Schedule C of its own that invests through a master trust: point to the trust's section, and
+// say plainly when the trust's filing for the plan's year isn't available and an earlier year is shown instead.
+function mtProvNote(p, m) {
+  const t = m.ack ? MTS[m.ack] : null;
+  const where = t ? `<button type="button" class="linkbtn" data-jumpmt="${esc(m.ack)}">the master trust’s section</button>` : "";
+  let text = `This plan holds its assets through <b>${esc(title(m.nm))}</b> <span class="mono">(${fmtEIN(m.ein)} / ${esc(m.pn)})</span>${m.int != null ? `, plan interest ${money(m.int)} at year end (from this plan’s Schedule D)` : ""}, and files no Schedule C of its own. `;
+  if (t && t.y === p.y) {
+    text += m.prov.length ? `The master trust’s service providers (${m.prov.length}, from its own Schedule C, covering every plan in the trust) are listed in ${where}.`
+                          : `The master trust’s plan year ${t.y} filing lists no Schedule C providers; its other details are in ${where}.`;
+  } else if (t) {
+    const prior = t.y === p.y - 1 ? "the prior plan year" : `an earlier plan year (${t.y})`;
+    text += `<b class="warn">The master trust’s plan year ${p.y} Form 5500 is not available yet.</b> The details in ${where} are from its plan year ${t.y} filing, the most recent available, so they are for ${prior}: ${m.prov.length ? `${m.prov.length} service providers from that year’s Schedule C, ` : "no Schedule C providers on that filing, "}and the trust’s assets, cash flows and participating plans as of that year.`;
+  } else {
+    text += `<b class="warn">The master trust’s Form 5500 for plan year ${p.y} is not available</b>, and no earlier filing for it is in the warehouse, so its service providers can’t be shown.`;
+  }
+  return `<div class="mtnote">${text} ${filingLink(m.ack, `Master trust Form 5500 PDF${t && t.y !== p.y ? ` (${t.y})` : ""}`, `Open the Form 5500 of ${title(m.nm)}`)}</div>`;
+}
+function providersBlock(d, p) {
+  const mts = d.mt || [];
+  if (d.prov && d.prov.length) return provTable(d.prov);
+  if (mts.length) return mts.map(m => mtProvNote(p, m)).join("");
+  return `<p class="note">${d.sched_h === false ? "Small plan (Schedule I filer), so no Schedule C is filed." : "No Schedule C service providers reported on this filing (only providers paid $5,000 or more are listed)."}</p>`;
+}
+
+const EXP_LINES = [
+  ["rk", "Recordkeeping"], ["ca", "Contract administrator"], ["im", "Investment advisory & management"],
+  ["act", "Actuarial"], ["aud", "Audit (IQPA)"], ["tru", "Trustee & custodial"], ["leg", "Legal"],
+  ["val", "Valuation & appraisal"], ["otf", "Other trustee fees"], ["prof", "Professional fees"], ["oth", "Other administrative"],
+];
+function cashExpenses(p, d, kind) {
+  const h = d.h;
+  if (!h) return `<p class="note">${d.sched_h === false ? "Small plan (Schedule I filer); cash-flow detail isn’t shown." : "No Schedule H cash-flow data on this filing."}</p>`;
+  const avg = p.b != null && p.e != null ? (p.b + p.e) / 2 : (p.b ?? p.e);
+  const bps = h.adm && avg ? h.adm / avg * 10000 : null;
+  // Schedule H Part II, regrouped so the lines add to the year's change in net assets
+  // (line 2k net income plus line 2l transfers): investment gain = total income (2d) less contributions (2a);
+  // expenses = total expenses (2j) less benefit payments (2e).
+  const tc = h.tc || 0, bp = h.bp || 0, tx = h.tx || 0;
+  const inv = (h.ti ?? ((h.ni || 0) + tx)) - tc;
+  const flows = [["Contributions", tc], ["Benefit payments", -bp], ["Investment gain/(loss)", inv]];
+  if (tx - bp) flows.push(["Administrative & other expenses", -(tx - bp)]);
+  // Line 2l: assets moved to/from other plans (mergers, spin-offs) sit outside net income.
+  const xfer = (h.tin || 0) - (h.tout || 0);
+  if (xfer) flows.push(["Transfers from/(to) other plans", xfer]);
+  const change = flows.reduce((sum, x) => sum + x[1], 0);
+  const split = kind === "DC" && (h.ec || h.pc || h.oc)
+    ? [["Employer", h.ec || 0], ["Employee", h.pc || 0], ["Rollover & other", h.oc || 0]] : null;
+  const fmt = unitFmt(Math.max(...flows.map(x => Math.abs(x[1])), Math.abs(change)));
+  const lines = EXP_LINES.filter(([k]) => h[k]).map(([k, l]) => [l, h[k]]);
+  const listed = lines.reduce((s, x) => s + x[1], 0);
+  if (h.adm && h.adm - listed > 1000) lines.push(["Not itemized", h.adm - listed]);
+  const maxL = Math.max(1, ...lines.map(x => x[1]));
+  return `<table class="flowstmt">
+      ${flows.map(([l, v], i) => `<tr><td>${esc(l)}</td><td>${fmt(v)}</td><td class="det">${i === 0 && split ? split.map(([sl, sv]) => `${esc(sl)} <b>${fmt(sv)}</b>`).join(" · ") : ""}</td></tr>`).join("")}
+      <tr class="sum"><td>Change in assets</td><td>${fmt(change)}</td><td class="det"></td></tr>
+    </table>
+`;
+}
+
+// Schedule D Part I: the plan's interests in DFEs, reconciled to Schedule H (or I) total assets at year end.
+// Each rendered table registers its rows so its Download CSV button can export them.
+const SD_CSV = new Map();
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("button.sdcsv");
+  if (!b) return;
+  const x = SD_CSV.get(b.dataset.k);
+  if (!x) return;
+  const { p, sd, ta, tot, gap, sched } = x;
+  const plan = [title(p.pl), `${fmtEIN(p.ein)}-${p.pn}`, p.y, p.pye];
+  const share = v => ta && v != null ? (v / ta * 100).toFixed(2) : "";
+  const lines = [["Plan", "Plan EIN-PN", "Plan year", "Plan year end", "Fund", "Manager", "Type", "Fund EIN", "Fund PN", "Value EOY", "% of total assets"]];
+  for (const r of sd) lines.push([...plan, title(r[0]), title(r[1]), DFE[r[4]] ? DFE[r[4]][1] : (r[4] || ""), r[2] ? fmtEIN(r[2]) : "", r[3] || "", r[5] ?? "", share(r[5])]);
+  lines.push([...plan, `Total Schedule D (${sd.length} fund${sd.length === 1 ? "" : "s"})`, "", "", "", "", tot, share(tot)]);
+  lines.push([...plan, `Schedule ${sched} total assets, EOY`, "", "", "", "", ta ?? "", ta ? "100.00" : ""]);
+  if (gap != null) lines.push([...plan, gap < 0 ? "Schedule D exceeds total assets by" : "Not in Schedule D (held directly or in other assets)", "", "", "", "", Math.abs(gap), share(Math.abs(gap))]);
+  saveCsv(lines, `5500_schedule_d_${p.ein}-${p.pn}`);
+});
+const DFE = { C: ["CCT", "Common/collective trust"], P: ["PSA", "Pooled separate account"], M: ["Master trust", "Master trust investment account"], E: ["103-12 IE", "103-12 investment entity"] };
+function scheduleD(p, d) {
+  const sd = (d.sd || []).slice().sort((a, b) => (b[5] || 0) - (a[5] || 0));
+  const sched = d.sched_h === false ? "I" : "H";
+  if (!sd.length) return `<p class="note">No Schedule D Part I on this filing, so the plan reports no investments in common/collective trusts, pooled separate accounts, master trusts or 103-12 entities.</p>`;
+  const tot = sd.reduce((t, x) => t + (x[5] || 0), 0);
+  const ta = d.te ?? p.e;   // total assets (before liabilities): Schedule D interests are part of them
+  const gap = ta != null ? ta - tot : null;
+  const fmt = unitFmt(Math.max(Math.abs(ta || 0), tot));
+  const LIMIT = 12;
+  SD_CSV.set(`${p.ein}-${p.pn}`, { p, d, sd, ta, tot, gap, sched });
+  return `<div class="provblock"><div class="sdbar"><button type="button" class="btn sec sm sdcsv" data-k="${p.ein}-${p.pn}" title="Download this Schedule D table as a CSV file">Download CSV</button></div><div class="tw"><table>
+      <thead><tr><th>Fund</th><th>Manager</th><th>Type</th><th>EIN-PN</th><th class="n">Value, EOY</th><th class="n">% of total assets</th></tr></thead>
+      <tbody>${sd.map((x, i) => `<tr${i >= LIMIT ? " hidden" : ""}>
+        <td style="min-width:200px">${esc(title(x[0]) || "—")}</td>
+        <td style="min-width:160px">${esc(title(x[1]) || "—")}</td>
+        <td style="white-space:nowrap">${DFE[x[4]] ? `<abbr class="note" title="${DFE[x[4]][1]}" style="text-decoration:none;cursor:help">${DFE[x[4]][0]}</abbr>` : `<span class="note">${esc(x[4] || "—")}</span>`}</td>
+        <td class="mono" style="white-space:nowrap">${x[2] ? fmtEIN(x[2]) : "—"}-${esc(x[3] || "—")}</td>
+        <td class="n">${fmt(x[5])}</td>
+        <td class="n note">${ta && x[5] != null ? pct(x[5] / ta * 100) : "—"}</td>
+      </tr>`).join("")}</tbody>
+      <tfoot>
+        <tr><td colspan="4">Total Schedule D, ${sd.length} fund${sd.length === 1 ? "" : "s"}</td><td class="n">${fmt(tot)}</td><td class="n">${ta ? pct(tot / ta * 100) : "—"}</td></tr>
+        <tr><td colspan="4">Schedule ${sched} total assets, EOY</td><td class="n">${fmt(ta)}</td><td class="n">${ta ? "100.0%" : "—"}</td></tr>
+        <tr><td colspan="4">${gap != null && gap < 0 ? "Schedule D exceeds total assets by" : "Not in Schedule D (held directly or in other assets)"}</td><td class="n">${gap == null ? "—" : fmt(Math.abs(gap))}</td><td class="n">${ta && gap != null ? pct(Math.abs(gap) / ta * 100) : "—"}</td></tr>
+      </tfoot>
+    </table></div>
+    ${sd.length > LIMIT ? `<button class="more" type="button">Show all ${sd.length} funds</button>` : ""}</div>`;
+}
+
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("button[data-jumpmt]");
+  if (!b) return;
+  const el = document.getElementById("pmt-" + b.dataset.jumpmt);
+  if (!el) return;
+  if (!el.offsetParent) setDepth(false);
+  el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+});
+// Master trusts: one section per trust the sponsor's plans invest through (Schedule D, code M), from the
+// trust's own Form 5500: size, cash flows, participating plans, its Schedule D and its Schedule C.
+let MTS = {};   // master-trust ack -> summary, from the open sponsor's shard
+function sponsorTrusts(plans, det) {
+  const out = new Map();
+  for (const p of plans) for (const m of (det[`${p.ein}-${p.pn}`] || {}).mt || []) {
+    if (!MTS[m.ack]) continue;
+    if (!out.has(m.ack)) out.set(m.ack, { ack: m.ack, t: MTS[m.ack], prov: m.prov || [], plans: [] });
+    out.get(m.ack).plans.push({ p, int: m.int });
+  }
+  return [...out.values()].sort((a, b) => (b.t.e || 0) - (a.t.e || 0));
+}
+function mtDossier({ ack, t, prov, plans }) {
+  const h = t.h || {};
+  const planYr = Math.max(...plans.map(x => x.p.y));
+  const older = t.y < planYr;
+  const fmt = unitFmt(Math.max(Math.abs(t.b || 0), Math.abs(t.e || 0)));
+  const ours = new Set(plans.map(x => `${x.p.ein}-${x.p.pn}`));
+  const mine = r => ours.has(`${r[2]}-${r[3]}`);
+  const ourInt = t.part.filter(mine).reduce((a, r) => a + (r[4] || 0), 0);
+  const nSp = new Set(t.part.map(r => r[1]).filter(Boolean)).size;
+  // the trust's year, regrouped like a plan's: no contributions or benefits; money moves in and out as transfers
+  const flows = [];
+  if (h.tc) flows.push(["Contributions", h.tc]);
+  flows.push(["Investment gain/(loss)", (h.ti ?? ((h.ni || 0) + (h.tx || 0))) - (h.tc || 0)]);
+  if (h.tx) flows.push(["Expenses", -h.tx]);
+  if (h.tin || h.tout) flows.push(["Transfers from/(to) participating plans", (h.tin || 0) - (h.tout || 0)]);
+  const change = flows.reduce((a, x) => a + x[1], 0);
+  const partSum = t.part.reduce((a, r) => a + (r[4] || 0), 0);
+  const tp = { ein: t.ein, pn: t.pn, pl: t.nm, y: t.y, pye: t.pye, e: t.e };
+  return `<section class="panel dossier mt" id="pmt-${esc(ack)}">
+    <div class="dh">
+      <div class="lab">Master trust</div>
+      <h3>${esc(title(t.nm))}</h3>
+      <div class="ids">${pyChip(tp)}<span class="chip py">EIN ${fmtEIN(t.ein)} / PN ${esc(t.pn)}</span><span class="chip py" title="EFAST2 acknowledgment ID">ACK ${esc(ack)}</span>${filingLinks(t.y, ack, t.prior)}<span class="chip feat" title="Sponsor that files the trust's Form 5500">Filed by ${esc(title(t.sp))}</span>${older ? `<span class="chip mx-fuzzy" title="The trust's filing for the plans' year isn't available yet">Plan year ${planYr} filing not available</span>` : ""}</div>
+      ${older ? `<p class="mtnote"><b class="warn">This master trust’s plan year ${planYr} Form 5500 is not available yet.</b> Everything in this section is from its plan year ${t.y} filing, the most recent available, so it is for ${t.y === planYr - 1 ? "the prior plan year" : `an earlier plan year (${t.y})`}. The plans investing through it report plan year ${planYr}.</p>` : ""}
+    </div>
+    <div class="sec"><div class="lab">Trust size <i>Schedule H net assets</i></div>
+      <div class="kpis">
+        <div class="kpi"><div class="lab">Net assets, BOY</div><div class="v">${money(t.b)}</div></div>
+        <div class="kpi"><div class="lab">Net assets, EOY</div><div class="v">${money(t.e)}</div><div class="s">${t.b && t.e != null ? `${t.e >= t.b ? "+" : "−"}${pct(Math.abs(t.e - t.b) / t.b * 100)} vs BOY` : ""}</div></div>
+        <div class="kpi"><div class="lab">This sponsor’s plans</div><div class="v">${money(ourInt)}</div><div class="s">${plans.length} plan${plans.length === 1 ? "" : "s"}${t.e ? " · " + pct(ourInt / t.e * 100) + " of the trust" : ""}</div></div>
+        <div class="kpi"><div class="lab">Participating plans</div><div class="v">${int(t.part.length)}</div><div class="s">${nSp > 1 ? `${nSp} sponsors` : "one sponsor"}</div></div>
+      </div>
+    </div>
+    <div class="sec"><div class="lab">Cash flows <i>Schedule H, plan year</i></div>
+      ${Object.keys(h).length ? `<table class="flowstmt">
+        ${flows.map(([l, v]) => `<tr><td>${esc(l)}</td><td>${fmt(v)}</td><td class="det"></td></tr>`).join("")}
+        <tr class="sum"><td>Change in net assets</td><td>${fmt(change)}</td><td class="det"></td></tr>
+      </table>` : `<p class="note">No Schedule H detail on the trust’s filing.</p>`}</div>
+    <div class="sec"><div class="lab">Participating plans <i>Schedule D Part II, with each plan’s interest from its own Schedule D</i></div>
+      ${t.part.length ? `<div class="tw"><table>
+        <thead><tr><th>Plan</th><th>Sponsor</th><th>EIN-PN</th><th class="n">Interest, EOY</th><th class="n">% of trust</th></tr></thead>
+        <tbody>${t.part.map(r => `<tr${mine(r) ? ` class="me jump" data-jump="${r[2]}-${r[3]}" title="Jump to this plan"` : ""}>
+          <td style="min-width:200px">${esc(title(r[0]) || "—")}</td>
+          <td>${esc(title(r[1]) || "—")}</td>
+          <td class="mono" style="white-space:nowrap">${r[2] ? fmtEIN(r[2]) : "—"}-${esc(r[3] || "—")}</td>
+          <td class="n">${r[4] != null ? fmt(r[4]) : `<span class="note" title="Listed on the trust's Schedule D Part II; the plan's own filing with its interest isn't in the warehouse">—</span>`}</td>
+          <td class="n note">${r[4] != null && t.e ? pct(r[4] / t.e * 100) : "—"}</td>
+        </tr>`).join("")}</tbody>
+        <tfoot><tr><td colspan="3">Total, ${t.part.length} plan${t.part.length === 1 ? "" : "s"}</td><td class="n">${fmt(partSum)}</td><td class="n">${t.e ? pct(partSum / t.e * 100) : "—"}</td></tr></tfoot>
+      </table></div>` : `<p class="note">The trust’s filing lists no participating plans.</p>`}
+      ${t.part.some(mine) && !t.part.every(mine) ? `<p class="note" style="margin-top:6px">Bold rows are this sponsor’s plans.</p>` : ""}</div>
+    ${t.sd && t.sd.length ? contd(tp, "Schedule D") : ""}
+    <div class="sec detail"><div class="lab">Investments in pooled funds <i>Schedule D, Part I</i></div>${t.sd && t.sd.length ? scheduleD(tp, { sd: t.sd, te: t.te, sched_h: true }) : `<p class="note">No Schedule D Part I on the trust’s filing.</p>`}</div>
+    ${prov.length ? contd(tp, "Schedule C") : ""}
+    <div class="sec detail"><div class="lab">Service providers &amp; fees <i>Schedule C, Part I</i></div>${prov.length ? `<div class="mtnote">From the master trust’s own Schedule C, so the fees cover every plan in the trust.</div>${provTable(prov)}` : `<p class="note">No Schedule C service providers on the trust’s filing.</p>`}</div>
+  </section>`;
+}
+
+// Print-only page break with a running header. Schedules D and C each start a page when they have a table;
+// a schedule that is only a "none filed" note stays on the page before it.
+const hasSchD = d => !!(d.sd && d.sd.length);
+const hasSchC = d => !!(d.prov && d.prov.length);
+const contd = (p, what) => `<div class="contd"><b>${esc(title(p.pl))}</b> · EIN ${fmtEIN(p.ein)} / PN ${p.pn} · ${what}</div>`;
+
+function dcDossier(p, d) {
+  d = d || {};
+  const lite = !hasSchC(d) && !hasSchD(d) && !d.h;
+  return `<section class="panel dossier dc${lite ? " lite" : ""}" id="p${p.ein}-${p.pn}">
+    <div class="dh">
+      <div class="lab">Defined contribution plan</div>
+      <h3>${esc(title(p.pl))}</h3>
+      <div class="ids">${pyChip(p)}<span class="chip py">EIN ${fmtEIN(p.ein)} / PN ${p.pn}</span>${d.ack ? `<span class="chip py" title="EFAST2 acknowledgment ID">ACK ${esc(d.ack)}</span>${filingLinks(p.y, d.ack, d.prior)}` : ""}${featureTags(p.cd)}</div>
+    </div>
+    <div class="sec"><div class="lab">Plan size <i>Schedule ${d.sched_h === false ? "I" : "H"}</i></div>
+      <div class="kpis">
+        <div class="kpi"><div class="lab">Assets, BOY</div><div class="v">${money(p.b)}</div></div>
+        <div class="kpi"><div class="lab">Assets, EOY</div><div class="v">${money(p.e)}</div></div>
+        <div class="kpi"><div class="lab">Change in assets</div><div class="v">${p.b != null && p.e != null ? (p.e >= p.b ? "+" : "−") + money(Math.abs(p.e - p.b)) : "—"}</div><div class="s">${p.b ? pct((p.e - p.b) / p.b * 100) : ""}</div></div>
+      </div>
+    </div>
+    <div class="sec"><div class="lab">Cash flows <i>Schedule H, plan year</i></div>${cashExpenses(p, d, "DC")}</div>
+    ${hasSchD(d) ? contd(p, "Schedule D") : ""}
+    <div class="sec"><div class="lab">Investments in pooled funds <i>Schedule D, Part I</i></div>${scheduleD(p, d)}</div>
+    ${hasSchC(d) ? contd(p, "Schedule C") : ""}
+    <div class="sec"><div class="lab">Service providers &amp; fees <i>Schedule C, Part I</i></div>${providersBlock(d, p)}</div>
+  </section>`;
+}
+
+function dossier(p, d) {
+  d = d || {};
+  const sb = d.sb && d.sb.ft ? d.sb : null;
+  const ft = sb ? sb.ft : null;
+  const fs = ft && p.b != null ? p.b / ft * 100 : null;
+  const gap = ft && p.b != null ? p.b - ft : null;
+
+  let size = `<div class="kpis k5">
+      <div class="kpi"><div class="lab">Market value, BOY</div><div class="v">${money(p.b)}</div><div class="s">Schedule ${d.sched_h === false ? "I" : "H"} net assets</div></div>
+      <div class="kpi"><div class="lab">Market value, EOY</div><div class="v">${money(p.e)}</div><div class="s">${p.b && p.e != null ? `${p.e >= p.b ? "+" : "−"}${pct(Math.abs(p.e - p.b) / p.b * 100)} vs BOY` : `Schedule ${d.sched_h === false ? "I" : "H"} net assets`}</div></div>
+      <div class="kpi"><div class="lab">Funding target, BOY</div><div class="v">${money(ft)}</div><div class="s">${sb ? "Schedule SB" : "No Schedule SB"}</div></div>
+      <div class="kpi"><div class="lab">Funded status (MV/FT)</div><div class="v">${pct(fs)}</div>${fundedStatus(fs)}</div>
+      <div class="kpi"><div class="lab">${gap != null && gap < 0 ? "Shortfall" : "Surplus"}</div><div class="v">${gap == null ? "—" : money(Math.abs(gap))}</div><div class="s">MV minus FT</div></div>
+    </div>`;
+  if (sb) size += fundingChart(p, d);
+  else size += `<p class="note" style="margin-top:12px">This filing has no Schedule SB funding target, so funded status and the funding chart aren’t available. Multiemployer plans file Schedule MB instead, which the warehouse doesn’t capture.</p>`;
+
+  let act;
+  const asb = d.sb;
+  if (asb && (asb.af || asb.an)) {
+    act = `<div class="actuary">
+      <div><div class="lab">Firm</div><div class="v">${esc(title(asb.af) || "—")}</div></div>
+      <div><div class="lab">Enrolled actuary</div><div class="v">${esc(title((asb.an || "").replace(/,.*$/, "")) || "—")}</div><div class="note">${esc((asb.an || "").match(/,\s*(.*)$/)?.[1] || "")}</div></div>
+      <div><div class="lab">City</div><div class="v">${esc(title(asb.ac) || "—")}${asb.ast ? ", " + esc(asb.ast) : ""}</div></div>
+    </div>`;
+  } else {
+    act = `<p class="note">No actuary on file. Schedule SB, which names the enrolled actuary, isn’t part of this filing.</p>`;
+  }
+
+  const prov = providersBlock(d, p);
+
+  return `<section class="panel dossier" id="p${p.ein}-${p.pn}">
+    <div class="dh">
+      <div class="lab">Defined benefit plan</div>
+      <h3>${esc(title(p.pl))}</h3>
+      <div class="ids">${pyChip(p)}<span class="chip py">EIN ${fmtEIN(p.ein)} / PN ${p.pn}</span>${d.ack ? `<span class="chip py" title="EFAST2 acknowledgment ID">ACK ${esc(d.ack)}</span>${filingLinks(p.y, d.ack, d.prior)}` : ""}${featureTags(p.cd)}</div>
+    </div>
+    <div class="sec"><div class="lab">Plan size &amp; funding <i>beginning of plan year unless noted</i></div>${size}</div>
+    <div class="cfact">
+      <div class="sec"><div class="lab">Cash flows <i>Schedule H, plan year</i></div>${cashExpenses(p, d, "DB")}</div>
+      <div class="sec"><div class="lab">Actuary <i>Schedule SB</i></div>${act}</div>
+    </div>
+    ${contd(p, "Schedule D")}
+    <div class="sec detail"><div class="lab">Investments in pooled funds <i>Schedule D, Part I</i></div>${scheduleD(p, d)}</div>
+    ${hasSchC(d) ? contd(p, "Schedule C") : ""}
+    <div class="sec detail"><div class="lab">Service providers &amp; fees <i>Schedule C, Part I</i></div>${prov}</div>
+  </section>`;
+}
+
+// ---------- company list ----------
+// Paste company names (or EINs), one per line. Each line is matched to sponsors in the index and their
+// DB plans are totalled from the index's per-EIN DB count and DB assets.
+//   Exact: same name after ignoring case, punctuation and legal-form words (The, Inc, Corp, LLC…), or a 9-digit EIN.
+//          Every EIN filing under that name is included.
+//   Fuzzy: the closest name by shared words, weighted toward distinctive words (IDF), allowing abbreviations
+//          (prefixes), acronyms and one-letter typos. Accepted at 60%+ similarity with most of the entered words found.
+const LEGAL = new Set(["THE","INC","INCORPORATED","CORP","CORPORATION","CO","COMPANY","LLC","LP","LLP","LTD","LIMITED","PLC","PC","NA"]);
+const LIST_KEY = "l5500:list";
+let LIST = null;   // { text, res } — kept while the page is open so "Back to company list" restores it
+let LX = null;     // name index, built on first use
+let listRun = 0;
+
+function coreToks(s) {
+  const raw = norm(s).split(" ").filter(Boolean), out = [];
+  for (let i = 0; i < raw.length; i++) {           // L L C -> LLC, U S A -> USA
+    let j = i, w = "";
+    while (j < raw.length && /^[A-Z]$/.test(raw[j])) w += raw[j++];
+    if (w.length > 1) { out.push(w); i = j - 1; } else out.push(raw[i]);
+  }
+  for (let changed = true; changed && out.length > 1;) {
+    changed = false;
+    const tail = out.join(" ").match(/ AND (CONSOLIDATED |ITS )?(SUBSIDIARIES|SUBSIDIARY|SUBS|AFFILIATES|AFFILIATED COMPANIES)$/);
+    if (tail) { out.length -= tail[0].trim().split(" ").length; changed = true; }
+    while (out.length > 1 && LEGAL.has(out[out.length - 1])) { out.pop(); changed = true; }
+  }
+  while (out.length > 1 && out[0] === "THE") out.shift();
+  return out;
+}
+function listIndex() {
+  if (LX) return LX;
+  const byCore = new Map(), tokRows = new Map(), toks = [], keys = [];
+  ROWS.forEach((r, i) => {
+    const t = coreToks(r[1]), k = t.join(" ");
+    toks.push(t); keys.push(k);
+    if (!byCore.has(k)) byCore.set(k, []);
+    byCore.get(k).push(i);
+    for (const w of new Set(t)) { if (!tokRows.has(w)) tokRows.set(w, []); tokRows.get(w).push(i); }
+  });
+  const N = ROWS.length;
+  const acro = new Map();   // initials of 3+ word names: INTERNATIONAL BUSINESS MACHINES -> IBM
+  const addAcro = (t, k) => {
+    t = t.filter(w => !["AND", "OF", "THE", "FOR"].includes(w));
+    if (t.length < 3) return;
+    const a = t.map(w => w[0]).join("");
+    if (!acro.has(a)) acro.set(a, new Set());
+    acro.get(a).add(k);
+  };
+  keys.forEach((k, i) => {
+    addAcro(toks[i], k);
+    const of = toks[i].indexOf("OF");   // UNITED PARCEL SERVICE OF AMERICA -> UPSA and UPS
+    if (of > 0) addAcro(toks[i].slice(0, of), k);
+  });
+  LX = { byCore, tokRows, toks, keys, acro, near: new Map(), vocab: [...tokRows.keys()], byEin: new Map(ROWS.map((r, i) => [r[0], i])),
+         idf: w => Math.log(1 + N / ((tokRows.get(w) || []).length + 1)) };
+  return LX;
+}
+function lev1(a, b) {   // edit distance <= 1 (an adjacent swap counts as one)
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, e = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++e > 1) return false;
+    if (a.length === b.length && a[i] === b[j + 1] && a[i + 1] === b[j]) { i += 2; j += 2; continue; }
+    if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+  }
+  return e + (a.length - i) + (b.length - j) <= 1;
+}
+// entered word w vs sponsor word v: 1 same, .85 one is a prefix of the other (4+ letters), .7 one typo (5+ letters)
+function wsim(w, v) {
+  if (w === v) return 1;
+  if (w.length >= 4 && v.length >= 4 && (v.startsWith(w) || w.startsWith(v))) return 0.85;
+  if (w.length >= 5 && v.length >= 4 && lev1(w, v)) return 0.7;
+  return 0;
+}
+function listGroup(rows, key, s = 1, cov = 1) {
+  const rs = rows.map(i => ROWS[i]).sort((a, b) => b[5] - a[5] || b[7] - a[7]);
+  return { key, s, cov, name: rs[0][1], eins: rs.map(r => r[0]),
+           place: [...new Set(rs.map(r => [title(r[2]), r[3]].filter(Boolean).join(", ")).filter(Boolean))],
+           nDB: rs.reduce((t, r) => t + r[4], 0), db: rs.reduce((t, r) => t + r[5], 0),
+           nDC: rs.reduce((t, r) => t + r[6], 0), dc: rs.reduce((t, r) => t + r[7], 0) };
+}
+function fuzzyGroups(words0, exclude) {
+  const X = listIndex(), words = [...new Set(words0)];
+  const near = new Map(words.map(w => {
+    if (!X.near.has(w)) {   // sponsor words resembling w, cached across lines
+      const m = new Map();
+      for (const v of X.vocab) { const s = wsim(w, v); if (s) m.set(v, s); }
+      X.near.set(w, m);
+    }
+    return [w, X.near.get(w)];
+  }));
+  // seed candidates from distinctive words only, so "American" or "Services" don't pull in half the index
+  const df = w => [...near.get(w).keys()].reduce((n, v) => n + X.tokRows.get(v).length, 0);
+  let seeds = words.filter(w => df(w) && df(w) <= 5000);
+  if (!seeds.length) seeds = words.filter(w => df(w)).sort((a, b) => df(a) - df(b)).slice(0, 1);
+  const wIdf = new Map(words.map(w => [w, X.idf(w)])), wTot = words.reduce((t, w) => t + wIdf.get(w), 0);
+  const best = new Map();
+  for (const w of seeds) for (const v of near.get(w).keys()) for (const i of X.tokRows.get(v)) {
+    const k = X.keys[i];
+    if (k === exclude || best.has(k)) continue;
+    const C = [...new Set(X.toks[i])];
+    let a = 0, b = 0, bw = 0;
+    const cBest = new Array(C.length).fill(0);
+    for (const w2 of words) {
+      const m = near.get(w2);
+      let top = 0;
+      C.forEach((c, j) => { const v = m.get(c) || 0; if (v > top) top = v; if (v > cBest[j]) cBest[j] = v; });
+      a += top * wIdf.get(w2);
+    }
+    C.forEach((c, j) => { const wt = X.idf(c); bw += wt; b += cBest[j] * wt; });
+    const cov = wTot ? a / wTot : 0;
+    best.set(k, { s: 0.7 * cov + 0.3 * (bw ? b / bw : 0), cov });
+  }
+  // a single short word may be an acronym of a longer name (IBM); scored like a strong partial match
+  if (words.length === 1 && /^[A-Z]{3,6}$/.test(words[0]))
+    for (const k of X.acro.get(words[0]) || []) if (k !== exclude && !(best.get(k)?.s >= 0.85)) best.set(k, { s: 0.85, cov: 0.85 });
+  // rank by similarity (5-point buckets), then by DB assets so a close name with DB plans beats one without
+  return [...best].sort((x, y) => y[1].s - x[1].s).slice(0, 40)
+    .map(([k, sc]) => listGroup(X.byCore.get(k), k, sc.s, sc.cov))
+    .sort((a, b) => Math.round(b.s * 20) - Math.round(a.s * 20) || b.db - a.db || b.dc - a.dc).slice(0, 6);
+}
+function matchCompany(input) {
+  const X = listIndex();
+  const none = { input, kind: "none", alts: [], sel: -1 };
+  const digits = input.replace(/[\s-]/g, "");
+  if (/^\d{9}$/.test(digits)) {
+    const i = X.byEin.get(digits);
+    return i == null ? none : { input, kind: "exact", byEin: true, alts: [listGroup([i], "ein:" + digits)], sel: 0 };
+  }
+  const toks = coreToks(input), key = toks.join(" ");
+  if (!key) return none;
+  const alts = fuzzyGroups(toks, key);
+  const ex = X.byCore.get(key);
+  if (ex) return { input, kind: "exact", alts: [listGroup(ex, key), ...alts.slice(0, 5)], sel: 0 };
+  const ok = alts.length && alts[0].s >= 0.6 && alts[0].cov >= 0.75;
+  return { input, kind: ok ? "fuzzy" : "none", alts, sel: ok ? 0 : -1 };
+}
+
+// ---------- Multi-Search options: what to search for, and filters (kept per browser) ----------
+const MS_KEY = "m5500:opts", PLIST_KEY = "l5500:prov";
+const MS = { mode: "sponsor", db: true, dc: false, dbMin: "", dbMax: "", dcMin: "", dcMax: "", roles: null };   // roles: null = all
+// Provider-role filter (service-provider search): the tagged roles plus Other (none of their codes).
+const ROLE_OPTS = () => [...ROLES.map(r => [r.key, r.label]), ["other", "Other / untagged"]];
+try { Object.assign(MS, JSON.parse(localStorage.getItem(MS_KEY) || "{}")); } catch (e) {}
+const saveMS = () => { try { localStorage.setItem(MS_KEY, JSON.stringify(MS)); } catch (e) {} };
+let PLIST = null;   // service-provider results { text, res: [{ input, names }] }
+let PV = null, PVX = null;   // provider index: the load promise, and the loaded index
+const PROV_URL = "data/providers.enc";
+const msHasResults = () => MS.mode === "provider" ? !!(PLIST && PLIST.res) : !!(LIST && (LIST.res || LIST.screen));
+
+// asset bounds are entered in $ millions; blank = no bound
+const parseM = v => { const s = String(v || "").replace(/[$,\s]/g, "").replace(/m$/i, ""); if (!s) return null; const n = Number(s); return isFinite(n) && n >= 0 ? n * 1e6 : NaN; };
+function msFilter() {
+  const f = { db: MS.db, dc: MS.dc, dbMin: MS.db ? parseM(MS.dbMin) : null, dbMax: MS.db ? parseM(MS.dbMax) : null,
+              dcMin: MS.dc ? parseM(MS.dcMin) : null, dcMax: MS.dc ? parseM(MS.dcMax) : null };
+  const b = [f.dbMin, f.dbMax, f.dcMin, f.dcMax];
+  f.err = !f.db && !f.dc ? "Tick DB, DC or both."
+    : b.some(Number.isNaN) ? "Enter asset bounds as numbers in $ millions (e.g. 250)."
+    : (f.dbMin != null && f.dbMax != null && f.dbMin > f.dbMax) || (f.dcMin != null && f.dcMax != null && f.dcMin > f.dcMax) ? "A minimum is above its maximum." : "";
+  f.ranged = b.some(v => v != null);
+  const all = ROLE_OPTS().map(x => x[0]);
+  f.roles = new Set(Array.isArray(MS.roles) ? MS.roles.filter(k => all.includes(k)) : all);
+  f.allRoles = f.roles.size === all.length;
+  if (!f.err && MS.mode === "provider" && !f.roles.size) f.err = "Tick at least one provider role.";
+  return f;
+}
+const inR = (v, lo, hi) => (lo == null || v >= lo) && (hi == null || v <= hi);
+// A sponsor passes when it has a plan of a ticked type and its totals sit inside every range entered.
+const msPass = (f, nDB, db, nDC, dc) => ((f.db && nDB > 0) || (f.dc && nDC > 0))
+  && (!f.db || inR(db || 0, f.dbMin, f.dbMax)) && (!f.dc || inR(dc || 0, f.dcMin, f.dcMax));
+function msFilterText(f) {
+  const rng = (lo, hi) => lo != null && hi != null ? `${money(lo)}–${money(hi)}` : lo != null ? `at least ${money(lo)}` : `at most ${money(hi)}`;
+  const parts = [f.db && f.dc ? "DB and DC plans" : f.db ? "DB plans" : "DC plans"];
+  if (f.db && (f.dbMin != null || f.dbMax != null)) parts.push(`DB assets ${rng(f.dbMin, f.dbMax)}`);
+  if (f.dc && (f.dcMin != null || f.dcMax != null)) parts.push(`DC assets ${rng(f.dcMin, f.dcMax)}`);
+  if (MS.mode === "provider" && !f.allRoles) parts.push(`roles: ${ROLE_OPTS().filter(x => f.roles.has(x[0])).map(x => x[1]).join(", ")}`);
+  return parts.join(" · ");
+}
+const kpi = (lab, v, cls = "") => `<div class="kpi"><div class="lab">${lab}</div><div class="v ${cls}">${v}</div></div>`;
+function saveCsv(lines, name) {
+  const q = v => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const blob = new Blob([lines.map(l => l.map(q).join(",")).join("\r\n")], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${name}_${META.built}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function wireSponsorLinks(box) {   // rows and names open the sponsor in the Single Company view
+  box.querySelectorAll("button[data-ein]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); goSponsor(b.dataset.ein); }));
+  box.querySelectorAll("tr.jump").forEach(tr => {
+    tr.addEventListener("click", e => { if (!e.target.closest("select, button, a, summary")) goSponsor(tr.dataset.ein); });
+    tr.addEventListener("keydown", e => { if (e.key === "Enter" && e.target === tr) goSponsor(tr.dataset.ein); });
+  });
+}
+
+function openList() {
+  current = null;
+  setView(true);
+  try { history.replaceState(null, "", "#list"); } catch (e) {}
+  $("#q").value = ""; showDrop(false);
+  const prov = MS.mode === "provider";
+  document.title = `Multi-Search — ${prov ? "service providers" : "plan sponsors"}`;
+  $("#pagefoot").textContent = "";
+  const cur = prov ? PLIST : LIST;
+  let text = cur ? cur.text : "";
+  if (!cur) try { text = localStorage.getItem(prov ? PLIST_KEY : LIST_KEY) || ""; } catch (e) {}
+  const rng = (k, lab) => `<fieldset class="msrng" id="r${k}"${MS[k] ? "" : " disabled"}><legend>${lab} <i>$M</i></legend><div class="msrow">
+      <input type="text" inputmode="decimal" id="${k}Min" value="${esc(MS[k + "Min"])}" placeholder="Min" aria-label="${lab} minimum, $ millions"><span>to</span>
+      <input type="text" inputmode="decimal" id="${k}Max" value="${esc(MS[k + "Max"])}" placeholder="Max" aria-label="${lab} maximum, $ millions"></div></fieldset>`;
+  $("#report").innerHTML = `<section class="panel listin">
+      <div class="mshead"><div class="lab">Multi-Search</div>
+        <div class="viewtog" role="group" aria-label="Search for"><button type="button" id="mssp" aria-pressed="${!prov}">Plan sponsors</button><button type="button" id="msprov" aria-pressed="${prov}">Service providers</button></div></div>
+      <h2>${prov ? "Plan sponsors served by a list of service providers" : "Retirement plans for a list of companies"}</h2>
+      <p class="note">${prov
+        ? "Paste service provider names, one per line. Each line is matched to the Schedule C service providers on every plan’s filing, and the plan sponsors they serve are listed with the provider’s roles and compensation."
+        : "Paste company names or EINs, one per line. A column copied from Excel works (only the first column is used). Each line is matched to plan sponsors and their plans are totalled. Or leave the box empty and set an asset range to screen every sponsor."}</p>
+      ${prov ? provHelp() : ""}
+      <textarea id="listtxt" spellcheck="false" aria-label="${prov ? "Service provider names" : "Company names"}, one per line" placeholder="${prov ? "Fidelity&#10;Aon&#10;Northern Trust&#10;Willis Towers Watson" : "The Boeing Company&#10;Honeywell International&#10;TJX Companies&#10;91-0425694"}">${esc(text)}</textarea>
+      <div class="msfilt">
+        <fieldset class="mstypes"><legend>Plan types</legend><div class="msrow">
+          <label><input type="checkbox" id="cdb"${MS.db ? " checked" : ""}> DB</label>
+          <label><input type="checkbox" id="cdc"${MS.dc ? " checked" : ""}> DC</label></div></fieldset>
+        ${rng("db", "Total DB assets")}
+        ${rng("dc", "Total DC assets")}
+        ${prov ? `<fieldset class="msroles"><legend>Provider roles <i>tagged from Schedule C service codes</i></legend><div class="msrow">
+          ${ROLE_OPTS().map(([k, l]) => `<label title="${esc(k === "other" ? "Every provider entry without a tagged role: other service codes (auditors, lawyers, trustees, custodians…) or no service code at all. With every box ticked, all records are included" : "Service codes " + ROLES.find(r => r.key === k).codes.join(", "))}"><input type="checkbox" class="crole" value="${k}"${!Array.isArray(MS.roles) || MS.roles.includes(k) ? " checked" : ""}> ${esc(l)}</label>`).join("")}
+          <button type="button" class="linkbtn" id="rolesall">All</button><button type="button" class="linkbtn" id="rolesnone">None</button></div></fieldset>` : ""}
+      </div>
+      <div class="listbar"><button type="button" class="btn" id="listrun">${prov ? "Find sponsors" : "Search"}</button>
+        <button type="button" class="btn sec" id="listcsv" disabled title="Run a search first">Download CSV</button>
+        <button type="button" class="btn sec" id="listclear" title="Clear the box, the filters and the results">Clear</button>
+        <span class="note" id="listmsg" role="status"></span></div>
+    </section><div id="listres"></div>`;
+  const setMode = m => { if (MS.mode !== m) { MS.mode = m; saveMS(); openList(); } };
+  $("#mssp").addEventListener("click", () => setMode("sponsor"));
+  $("#msprov").addEventListener("click", () => setMode("provider"));
+  // filters apply to the results on screen as soon as they change
+  let ft;
+  const refilter = () => { clearTimeout(ft); ft = setTimeout(() => { if (msHasResults()) (prov ? renderProv : renderList)(); }, 250); };
+  const syncRoles = () => {
+    const on = [...document.querySelectorAll("input.crole")].filter(c => c.checked).map(c => c.value);
+    MS.roles = on.length === ROLE_OPTS().length ? null : on;
+    saveMS(); refilter();
+  };
+  document.querySelectorAll("input.crole").forEach(c => c.addEventListener("change", syncRoles));
+  const setAll = v => { document.querySelectorAll("input.crole").forEach(c => c.checked = v); syncRoles(); };
+  $("#rolesall")?.addEventListener("click", () => setAll(true));
+  $("#rolesnone")?.addEventListener("click", () => setAll(false));
+  for (const k of ["db", "dc"]) {
+    $("#c" + k).addEventListener("change", e => { MS[k] = e.target.checked; $("#r" + k).disabled = !MS[k]; saveMS(); refilter(); });
+    for (const b of ["Min", "Max"]) $("#" + k + b).addEventListener("input", e => { MS[k + b] = e.target.value; saveMS(); refilter(); });
+  }
+  const run = () => (prov ? runProv : runList)();
+  const help = $("#provhelp");
+  if (help) {
+    help.addEventListener("toggle", () => { try { localStorage.setItem("h5500:provhelp", help.open ? "1" : "0"); } catch (e) {} });
+    help.querySelectorAll("button.firmchip").forEach(b => b.addEventListener("click", () => {
+      const ta = $("#listtxt"), lines = ta.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      if (!lines.some(l => fnorm(l) === fnorm(b.dataset.firm))) lines.push(b.dataset.firm);
+      ta.value = lines.join("\n");
+      ta.focus();
+    }));
+  }
+  $("#listrun").addEventListener("click", run);
+  $("#listclear").addEventListener("click", clearList);
+  $("#listtxt").addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) run(); });
+  $("#report").querySelectorAll(".msfilt input[type=text]").forEach(i => i.addEventListener("keydown", e => { if (e.key === "Enter") run(); }));
+  if (msHasResults()) (prov ? renderProv : renderList)();
+}
+
+// Provider-search help: the firms with a curated name rule (click one to add it) and how other names match.
+function provHelp() {
+  const firms = META.firms || [];
+  let open = true;
+  try { open = localStorage.getItem("h5500:provhelp") !== "0"; } catch (e) {}
+  return `<details class="provhelp" id="provhelp"${open ? " open" : ""}>
+    <summary>How provider names are matched</summary>
+    <p><b>Mapped firms.</b> Filers spell the same provider many ways (for example “Fidelity Investments Institutional Operations Co”, “FIIOC” and “FMR LLC” are all Fidelity). These ${firms.length} firms are mapped to a single name, so typing the name below finds every spelling, while unrelated look-alikes are left out (Fidelity &amp; Guaranty Life is not Fidelity; Cambridge means Cambridge Associates). Click a name to add it:</p>
+    <div class="firmchips">${firms.map(([k, d]) => `<button type="button" class="chip firmchip" data-firm="${esc(d)}" title="Add ${esc(d)} to the search">${esc(d)}</button>`).join("")}</div>
+    <p><b>Any other provider</b> is matched by its words: every provider whose name contains all the words on a line, ignoring case, punctuation and Inc / Corp / LLC / The; a word of four or more letters also matches longer words starting with it (“Fidel” finds Fidelity). So:</p>
+    <ul>
+      <li>Type a short, distinctive part of the name: “Principal” rather than “Principal Life Insurance Company”, “Newport Group” rather than “The Newport Group, Inc.”</li>
+      <li>Check the <i>provider names matched</i> list under each result; if it catches unrelated firms, add a word (“Principal Financial”), and if it misses spellings, use fewer words.</li>
+      <li>One provider per line. To match a mapped firm’s name by its words instead of its list, put the line in quotes, for example <code>"Mercer"</code>.</li>
+    </ul>
+  </details>`;
+}
+
+// The Download CSV button beside Search: enabled for the results on screen (fn null = nothing to download).
+function setCsv(fn, label = "Download CSV") {
+  const b = $("#listcsv");
+  if (!b) return;
+  b.disabled = !fn;
+  b.textContent = label;
+  b.title = fn ? "Download these results as a CSV file" : "Run a search first";
+  b.onclick = fn;
+}
+// Clear: empty the box, reset the filters (both plan types, no asset ranges) and drop this mode's results.
+function clearList() {
+  const prov = MS.mode === "provider";
+  Object.assign(MS, { db: true, dc: true, dbMin: "", dbMax: "", dcMin: "", dcMax: "", roles: null });
+  saveMS();
+  if (prov) PLIST = null; else LIST = null;
+  try { localStorage.setItem(prov ? PLIST_KEY : LIST_KEY, ""); } catch (e) {}
+  listRun++;   // abandon a search still running
+  openList();
+  $("#listtxt").focus();
+}
+
+// ---------- plan sponsors: a pasted list, or a screen of every sponsor ----------
+async function runList() {
+  const text = $("#listtxt").value;
+  try { localStorage.setItem(LIST_KEY, text); } catch (e) {}
+  const f = msFilter();
+  if (f.err) { $("#listmsg").textContent = f.err; return; }
+  const lines = text.split(/\r?\n/).map(l => l.split("\t")[0].trim().replace(/^"(.*)"$/, "$1").trim()).filter(Boolean);
+  if (!lines.length) {
+    if (!f.ranged) { $("#listmsg").textContent = "Paste at least one company name, or set an asset range to screen every sponsor."; return; }
+    LIST = { text, screen: true };
+    $("#listmsg").textContent = "";
+    renderList();
+    return;
+  }
+  const run = ++listRun;
+  const tick = () => new Promise(r => setTimeout(r, 0));
+  $("#listrun").disabled = true;
+  $("#listmsg").textContent = "Indexing sponsor names…";
+  await tick();
+  listIndex();
+  const res = [];
+  for (let k = 0; k < lines.length; k++) {
+    if (k % 10 === 0) {
+      if (run !== listRun || !$("#listres")) return;   // a newer run started, or the user left the list
+      $("#listmsg").textContent = `Matching ${k + 1} of ${lines.length}…`;
+      await tick();
+    }
+    const r = matchCompany(lines[k]);
+    r.auto = { kind: r.kind, sel: r.sel };
+    res.push(r);
+  }
+  if (run !== listRun || !$("#listres")) return;
+  LIST = { text, res };
+  $("#listrun").disabled = false;
+  $("#listmsg").textContent = "";
+  renderList();
+}
+
+// A line whose sponsor EINs were all counted by an earlier line is a duplicate; totals count each EIN once.
+// A matched sponsor outside the filters stays listed but is left out of the totals.
+function listRows(f) {
+  const seen = new Set();
+  return LIST.res.map(r => {
+    const g = r.sel >= 0 ? r.alts[r.sel] : null;
+    const inF = !!g && msPass(f, g.nDB, g.db, g.nDC, g.dc);
+    const fresh = inF ? g.eins.filter(e => !seen.has(e)) : [];
+    fresh.forEach(e => seen.add(e));
+    return { r, g, inF, dup: inF && !fresh.length, fresh };
+  });
+}
+function matchChip(r) {
+  const g = r.sel >= 0 ? r.alts[r.sel] : null;
+  if (r.kind === "exact") return `<span class="chip mx-exact" title="${r.byEin ? "Matched by EIN" : "Same name, ignoring case, punctuation and Inc / Corp / LLC / The"}">Exact${r.byEin ? " · EIN" : ""}</span>`;
+  if (r.kind === "fuzzy") return `<span class="chip mx-fuzzy" title="Closest sponsor name; review it">Fuzzy · ${Math.round(g.s * 100)}%</span>`;
+  if (r.kind === "picked") return `<span class="chip mx-picked" title="Chosen by you from the candidates">Picked</span>`;
+  return `<span class="chip mx-none">No match</span>`;
+}
+const listMatchLabel = r => r.kind === "exact" ? (r.byEin ? "Exact (EIN)" : "Exact") : r.kind === "fuzzy" ? "Fuzzy" : r.kind === "picked" ? "Picked" : "No match";
+const ASSET_NOTE = `Plan assets are Schedule H (Schedule I for small plans) net assets at end of plan year, using beginning of year where a plan reports no year-end figure, from each plan’s latest filing. DB counts defined benefit and DB+DC plans.`;
+const FILTER_NOTE = `Filters: a sponsor is included when it has at least one plan of a ticked type and its total DB and/or DC assets fall inside every range entered (ranges are in $ millions; a blank bound is open).`;
+
+function renderList() {
+  const box = $("#listres");
+  if (!box) return;
+  const f = msFilter();
+  if (f.err) { box.innerHTML = `<section class="panel"><p class="note">${esc(f.err)}</p></section>`; setCsv(null); return; }
+  if (LIST.screen) return renderScreen(box, f);
+  const rows = listRows(f);
+  const cnt = k => LIST.res.filter(r => r.kind === k).length;
+  const uniq = rows.filter(x => x.inF && !x.dup);
+  const nOut = rows.filter(x => x.g && !x.inF).length;
+  const X = listIndex(), counted = rows.flatMap(x => x.fresh).map(e => ROWS[X.byEin.get(e)]);
+  const sum = i => counted.reduce((t, r) => t + r[i], 0);
+  const nDup = rows.filter(x => x.dup).length;
+  const einCell = g => {
+    const show = g.eins.slice(0, 3).map(e => `<button type="button" class="linkbtn ein" data-ein="${e}">${fmtEIN(e)}</button>`).join("<br>");
+    return show + (g.eins.length > 3 ? `<div class="note" title="${esc(g.eins.slice(3).map(fmtEIN).join(", "))}">+ ${g.eins.length - 3} more</div>` : "");
+  };
+  const altSel = (r, k) => {
+    if (!r.alts.length) return "";
+    const opt = (g, i) => `<option value="${i}"${i === r.sel ? " selected" : ""}>${esc(title(g.name))} · ${g.eins.length > 1 ? g.eins.length + " EINs" : fmtEIN(g.eins[0])} · DB ${g.nDB}${g.nDB ? " · " + money(g.db) : ""} · DC ${g.nDC}${g.nDC ? " · " + money(g.dc) : ""}${r.kind === "exact" && i === 0 && !r.byEin ? " (exact)" : ` (${Math.round(g.s * 100)}%)`}</option>`;
+    return `<select class="alt" data-k="${k}" aria-label="Choose the sponsor for ${esc(r.input)}">
+      <option value="-1"${r.sel < 0 ? " selected" : ""}>${r.sel < 0 ? `${r.alts.length} closest name${r.alts.length === 1 ? "" : "s"}, choose one…` : "Not a match"}</option>
+      ${r.alts.map(opt).join("")}</select>`;
+  };
+  const cols = (g, inF) => (f.db ? `<td class="n">${g ? int(g.nDB) : "—"}</td><td class="n"><b>${g && g.nDB ? money(g.db) : "—"}</b></td>` : "")
+    + (f.dc ? `<td class="n">${g ? int(g.nDC) : "—"}</td><td class="n"><b>${g && g.nDC ? money(g.dc) : "—"}</b></td>` : "");
+  box.innerHTML = `<section class="panel">
+    <div class="lsum">
+      ${kpi("Companies", LIST.res.length)}
+      ${kpi("Exact match", cnt("exact"), "fs good")}
+      ${kpi("Fuzzy match", cnt("fuzzy"), "fs warn")}
+      ${cnt("picked") ? kpi("Picked", cnt("picked")) : ""}
+      ${kpi("No match", cnt("none"), cnt("none") ? "fs bad" : "")}
+      ${nOut ? kpi("Outside filters", nOut) : ""}
+      ${f.db ? kpi("DB plans", int(sum(4))) + kpi("DB assets, EOY", money(sum(5))) : ""}
+      ${f.dc ? kpi("DC plans", int(sum(6))) + kpi("DC assets, EOY", money(sum(7))) : ""}
+    </div>
+    <div class="listbar"><span class="note">${esc(msFilterText(f))}</span>
+      ${nDup ? `<span class="note">${nDup} line${nDup === 1 ? "" : "s"} matched a sponsor already listed above; each EIN is counted once in the totals.</span>` : ""}</div>
+    <div class="tw"><table>
+      <thead><tr><th class="n">#</th><th>Company, as entered</th><th>Match</th><th>Matched sponsor</th><th>EIN</th>${f.db ? `<th class="n">DB plans</th><th class="n">DB assets, EOY</th>` : ""}${f.dc ? `<th class="n">DC plans</th><th class="n">DC assets, EOY</th>` : ""}</tr></thead>
+      <tbody>${rows.map(({ r, g, inF, dup }, k) => `<tr class="${g ? "jump" : ""}${dup || (g && !inF) ? " dup" : ""}"${g ? ` data-ein="${g.eins[0]}" tabindex="0"` : ""} title="${g && !inF ? "Outside the filters; not in the totals. " : ""}${dup ? "Same sponsor as an earlier line; not added to the totals again. " : ""}${g ? "Open this sponsor in the Single Company view" : ""}">
+        <td class="n note">${k + 1}</td>
+        <td style="min-width:160px">${esc(r.input)}</td>
+        <td>${matchChip(r)}</td>
+        <td style="min-width:240px">${g ? `<button type="button" class="linkbtn" data-ein="${g.eins[0]}" title="Open this sponsor's plans">${esc(title(g.name))}</button>
+            <div class="note">${esc(g.place.slice(0, 2).join(" · "))}${g.place.length > 2 ? " …" : ""}${g.eins.length > 1 ? ` · ${g.eins.length} EINs combined` : ""}${inF ? "" : " · outside the filters"}</div>`
+          : `<span class="note">No sponsor found</span>`}${altSel(r, k)}</td>
+        <td class="mono">${g ? einCell(g) : ""}</td>
+        ${cols(g, inF)}
+      </tr>`).join("")}</tbody>
+      <tfoot><tr><td></td><td colspan="4">Total, ${uniq.length} matched sponsor${uniq.length === 1 ? "" : "s"} inside the filters (${counted.length} EIN${counted.length === 1 ? "" : "s"}, each counted once)</td>${f.db ? `<td class="n">${int(sum(4))}</td><td class="n">${money(sum(5))}</td>` : ""}${f.dc ? `<td class="n">${int(sum(6))}</td><td class="n">${money(sum(7))}</td>` : ""}</tr></tfoot>
+    </table></div>
+    <p class="foot"><b>Exact</b>: the sponsor name is the same once case, punctuation and legal-form words (The, Inc, Corp, Corporation, Co, Company, LLC, LP, LLP, Ltd, PLC) are ignored, or the line is a 9-digit EIN; every EIN filing under that name is combined. <b>Fuzzy</b>: the closest sponsor name by shared words, weighted toward distinctive words and allowing abbreviations, acronyms (IBM) and one-letter typos; accepted at 60% similarity or more with most of the entered words found. Review fuzzy matches, and use the dropdown under a sponsor to pick another candidate or mark it not a match. Form 5500 files each EIN separately, so subsidiaries filing under a different name aren’t included unless listed. ${FILTER_NOTE} Matched sponsors outside the filters stay listed, greyed, and are left out of the totals. ${ASSET_NOTE} Plan years ${META.years.join(", then ")}.</p>
+  </section>`;
+  wireSponsorLinks(box);
+  box.querySelectorAll("select.alt").forEach(s => s.addEventListener("change", () => {
+    const r = LIST.res[+s.dataset.k], sel = +s.value;
+    r.sel = sel;
+    r.kind = sel === r.auto.sel ? r.auto.kind : sel < 0 ? "none" : "picked";
+    renderList();
+  }));
+  setCsv(downloadListCsv);
+}
+
+// Every sponsor EIN inside the filters, largest first (by DB assets when DB is ticked, else DC).
+const SCREEN_SHOW = 500;
+function screenRows(f) {
+  const k = f.db ? 5 : 7, k2 = f.db ? 7 : 5;
+  return ROWS.filter(r => msPass(f, r[4], r[5], r[6], r[7])).sort((a, b) => (b[k] || 0) - (a[k] || 0) || (b[k2] || 0) - (a[k2] || 0));
+}
+function renderScreen(box, f) {
+  if (!f.ranged) { box.innerHTML = `<section class="panel"><p class="note">Set an asset range to screen every sponsor, or paste a list of companies.</p></section>`; setCsv(null); return; }
+  const rows = screenRows(f);
+  const sum = i => rows.reduce((t, r) => t + r[i], 0);
+  box.innerHTML = `<section class="panel">
+    <div class="lsum">
+      ${kpi("Sponsors", int(rows.length))}
+      ${f.db ? kpi("DB plans", int(sum(4))) + kpi("DB assets, EOY", money(sum(5))) : ""}
+      ${f.dc ? kpi("DC plans", int(sum(6))) + kpi("DC assets, EOY", money(sum(7))) : ""}
+    </div>
+    <div class="listbar"><span class="note">${esc(msFilterText(f))}${rows.length > SCREEN_SHOW ? ` · showing the largest ${SCREEN_SHOW}` : ""}</span></div>
+    ${rows.length ? `<div class="tw"><table>
+      <thead><tr><th class="n">#</th><th>Plan sponsor</th><th>EIN</th>${f.db ? `<th class="n">DB plans</th><th class="n">DB assets, EOY</th>` : ""}${f.dc ? `<th class="n">DC plans</th><th class="n">DC assets, EOY</th>` : ""}</tr></thead>
+      <tbody>${rows.slice(0, SCREEN_SHOW).map((r, k) => `<tr class="jump" data-ein="${r[0]}" tabindex="0" title="Open this sponsor in the Single Company view">
+        <td class="n note">${k + 1}</td>
+        <td style="min-width:240px"><button type="button" class="linkbtn" data-ein="${r[0]}">${esc(title(r[1]))}</button><div class="note">${esc([title(r[2]), r[3]].filter(Boolean).join(", "))}</div></td>
+        <td class="mono">${fmtEIN(r[0])}</td>
+        ${f.db ? `<td class="n">${int(r[4])}</td><td class="n"><b>${r[4] ? money(r[5]) : "—"}</b></td>` : ""}
+        ${f.dc ? `<td class="n">${int(r[6])}</td><td class="n"><b>${r[6] ? money(r[7]) : "—"}</b></td>` : ""}
+      </tr>`).join("")}</tbody>
+      <tfoot><tr><td></td><td colspan="2">Total, ${int(rows.length)} sponsor EIN${rows.length === 1 ? "" : "s"}${rows.length > SCREEN_SHOW ? " (all, not just those shown)" : ""}</td>${f.db ? `<td class="n">${int(sum(4))}</td><td class="n">${money(sum(5))}</td>` : ""}${f.dc ? `<td class="n">${int(sum(6))}</td><td class="n">${money(sum(7))}</td>` : ""}</tr></tfoot>
+    </table></div>` : `<p class="note" style="margin-top:12px">No sponsor matches these filters.</p>`}
+    <p class="foot">Screen of every plan sponsor in the index. Each EIN is listed separately (a company filing under several EINs appears once per EIN). ${FILTER_NOTE} ${ASSET_NOTE} Plan years ${META.years.join(", then ")}.</p>
+  </section>`;
+  wireSponsorLinks(box);
+  setCsv(rows.length ? downloadListCsv : null, rows.length > SCREEN_SHOW ? `Download CSV (all ${int(rows.length)})` : "Download CSV");
+}
+
+function downloadListCsv() {
+  const f = msFilter();
+  const typeCols = (h, nDB, db, nDC, dc) => h ? [...(f.db ? ["DB plans", "DB assets EOY"] : []), ...(f.dc ? ["DC plans", "DC assets EOY"] : [])]
+    : [...(f.db ? [nDB, db] : []), ...(f.dc ? [nDC, dc] : [])];
+  if (LIST.screen) {
+    const lines = [["Plan sponsor", "EIN", "City", "State", ...typeCols(true)]];
+    for (const r of screenRows(f)) lines.push([title(r[1]), fmtEIN(r[0]), title(r[2]), r[3], ...typeCols(false, r[4], r[5], r[6], r[7])]);
+    return saveCsv(lines, "5500_sponsor_screen");
+  }
+  const lines = [["Company (as entered)", "Match", "Similarity", "Matched sponsor", "EINs", "City / state", ...typeCols(true), "Counted in totals"]];
+  for (const { r, g, inF, dup } of listRows(f)) lines.push([r.input, listMatchLabel(r), g && r.kind !== "exact" ? Math.round(g.s * 100) + "%" : "",
+    g ? title(g.name) : "", g ? g.eins.map(fmtEIN).join("; ") : "", g ? g.place.join("; ") : "",
+    ...(g ? typeCols(false, g.nDB, g.db, g.nDC, g.dc) : typeCols(true).map(() => "")),
+    g ? (!inF ? "No (outside filters)" : dup ? "No (duplicate)" : "Yes") : ""]);
+  saveCsv(lines, "5500_company_list");
+}
+
+// ---------- service providers ----------
+// The provider index lists, for every Schedule C provider row, each plan it serves: the plan's own Schedule C
+// (via 0) or the Schedule C of a master trust the plan invests through (via 1). Rows sharing a uid are one
+// Schedule C entry, so a master trust's fee is counted once per sponsor and once per provider.
+function loadProviders() {
+  if (!PV) PV = loadGz(PROV_URL).then(p => {
+    const tokNames = new Map(), byName = new Map(), plansOf = new Map();
+    p.names.forEach((n, i) => { for (const w of new Set(coreToks(n))) { if (!tokNames.has(w)) tokNames.set(w, []); tokNames.get(w).push(i); } });
+    p.rows.forEach((r, i) => {
+      if (!byName.has(r[0])) byName.set(r[0], []);
+      byName.get(r[0]).push(i);
+      plansOf.set(r[0], (plansOf.get(r[0]) || 0) + 1);
+    });
+    const rowRoles = p.rows.map(r => {
+      const cs = (r[4] || "").split(" ");
+      const ks = ROLES.filter(x => x.codes.some(c => cs.includes(c))).map(x => x.key);
+      return ks.length ? ks : ["other"];
+    });
+    PVX = { ...p, tokNames, vocab: [...tokNames.keys()], byName, plansOf, rowRoles, near: new Map() };
+    return PVX;
+  }).catch(e => { PV = null; throw e; });
+  return PV;
+}
+// Firm rules (src/firm_aliases.csv, shipped in the provider index): a typed name that a rule recognises
+// (or the firm's own name, e.g. "Cambridge") uses that firm's curated list of spellings, with its exclusions.
+// Same test as src/firms.py: whole words / phrases, phrases also across removed spaces; an exclude overrides.
+const fnorm = s => String(s || "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function firmPat(p, spaced, compact) {
+  if (new RegExp(`\\b${reEsc(p)}\\b`).test(spaced)) return true;
+  return p.includes(" ") && compact.includes(p.replace(/ /g, ""));
+}
+function firmsOf(input) {
+  const spaced = fnorm(input), compact = spaced.replace(/ /g, "");
+  if (!spaced) return [];
+  return Object.entries(PVX.firms || {}).filter(([k, f]) => k === spaced
+    || (f.inc.some(p => firmPat(p, spaced, compact)) && !f.exc.some(p => firmPat(p, spaced, compact)))).map(([k]) => k);
+}
+// A line is matched by firm rule when one applies; otherwise (or when the line is in quotes) by its words:
+// provider names containing every entered word (exactly, or as the start of a 4+ letter word: "Fidel" finds Fidelity).
+function matchProvider(input) {
+  const quoted = /^["'“].*["'”]$/.test(input);
+  if (quoted) input = input.slice(1, -1);
+  const firms = quoted ? [] : firmsOf(input);
+  if (firms.length) {
+    const set = new Set(firms.flatMap(k => PVX.firms[k].names));
+    return { names: [...set].sort((a, b) => PVX.plansOf.get(b) - PVX.plansOf.get(a)), firms };
+  }
+  return { names: matchWords(input), firms: [] };
+}
+function matchWords(input) {
+  const P = PVX, words = [...new Set(coreToks(input))];
+  if (!words.length) return [];
+  let hit = null;
+  for (const w of words) {
+    if (!P.near.has(w)) P.near.set(w, P.vocab.filter(v => wsim(w, v) >= 0.85));
+    const s = new Set(P.near.get(w).flatMap(v => P.tokNames.get(v)));
+    hit = hit ? new Set([...hit].filter(i => s.has(i))) : s;
+    if (!hit.size) return [];
+  }
+  return [...hit].sort((a, b) => P.plansOf.get(b) - P.plansOf.get(a));
+}
+async function runProv() {
+  const text = $("#listtxt").value;
+  try { localStorage.setItem(PLIST_KEY, text); } catch (e) {}
+  const f = msFilter();
+  if (f.err) { $("#listmsg").textContent = f.err; return; }
+  // quotes are kept here: a line in quotes forces a word match instead of the firm rule
+  const lines = [...new Set(text.split(/\r?\n/).map(l => l.split("\t")[0].trim()).filter(Boolean))];
+  if (!lines.length) { $("#listmsg").textContent = "Paste at least one service provider name."; return; }
+  const run = ++listRun;
+  $("#listrun").disabled = true;
+  $("#listmsg").textContent = "Loading the service provider index…";
+  try { await loadProviders(); }
+  catch (e) { $("#listrun").disabled = false; $("#listmsg").textContent = `The provider index didn’t load (${e.message}). Try again.`; return; }
+  if (run !== listRun || !$("#listres")) return;
+  listIndex();
+  $("#listmsg").textContent = "Matching…";
+  await new Promise(r => setTimeout(r, 0));
+  PLIST = { text, res: lines.map(input => ({ input, ...matchProvider(input) })) };
+  $("#listrun").disabled = false;
+  $("#listmsg").textContent = "";
+  renderProv();
+}
+// Sponsors served by a set of provider names, inside the filters; plans of an unticked type are skipped.
+function provSponsors(names, f) {
+  const P = PVX, X = listIndex(), sp = new Map(), uids = new Set();
+  let dcT = 0, icT = 0;
+  for (const ni of names) for (const ri of P.byName.get(ni) || []) {
+    const [, ein, pn, t, codes, dc, ic, eic, via, uid] = P.rows[ri];
+    if ((t === "DC") ? !f.dc : !f.db) continue;
+    if (!f.allRoles && !P.rowRoles[ri].some(k => f.roles.has(k))) continue;   // provider not serving this plan in a ticked role
+    const i = X.byEin.get(ein), row = i == null ? null : ROWS[i];
+    if (!row || !msPass(f, row[4], row[5], row[6], row[7])) continue;
+    let a = sp.get(ein);
+    if (!a) sp.set(ein, a = { ein, row, plans: new Map(), codes: new Set(), names: new Set(), uids: new Set(), dc: 0, ic: 0, eic: false, viaMt: false });
+    a.plans.set(pn, t);
+    if (codes) codes.split(" ").forEach(c => a.codes.add(c));
+    a.names.add(ni);
+    if (via) a.viaMt = true;
+    if (eic) a.eic = true;
+    if (!a.uids.has(uid)) { a.uids.add(uid); a.dc += dc || 0; a.ic += ic || 0; }
+    if (!uids.has(uid)) { uids.add(uid); dcT += dc || 0; icT += ic || 0; }
+  }
+  const list = [...sp.values()].map(a => {
+    const ts = [...a.plans.values()];
+    return { ...a, nDB: ts.filter(t => t !== "DC").length, nDC: ts.filter(t => t === "DC").length,
+             roles: ROLES.filter(r => r.codes.some(c => a.codes.has(c))) };
+  }).sort((x, y) => (y.dc + y.ic) - (x.dc + x.ic) || (y.row[5] + y.row[7]) - (x.row[5] + x.row[7]));
+  return { list, dc: dcT, ic: icT, plans: list.reduce((t, a) => t + a.plans.size, 0) };
+}
+const PROV_SHOW = 25, PROV_MAX = 500;
+function renderProv() {
+  const box = $("#listres");
+  if (!box || !PLIST || !PVX) return;
+  const f = msFilter();
+  if (f.err) { box.innerHTML = `<section class="panel"><p class="note">${esc(f.err)}</p></section>`; setCsv(null); return; }
+  const P = PVX;
+  const blocks = PLIST.res.map(r => ({ r, agg: provSponsors(r.names, f) }));
+  const allSp = new Set(blocks.flatMap(b => b.agg.list.map(a => a.ein)));
+  const matched = blocks.filter(b => b.r.names.length).length;
+  const roleChips = a => a.roles.length ? `<div class="roles">${a.roles.map(r => `<span class="role ${r.key}">${r.label}</span>`).join("")}</div>` : `<span class="note">Other</span>`;
+  const indirect = a => a.ic ? dollars(a.ic) : a.eic ? `<span class="note" title="Eligible indirect compensation is disclosed in Schedule C Part I, Item 1, without a dollar amount">Eligible indirect</span>` : "—";
+  const served = a => [a.nDB ? `${a.nDB} DB` : "", a.nDC ? `${a.nDC} DC` : ""].filter(Boolean).join(" · ") + (a.viaMt ? `<div class="note" title="At least one plan uses this provider through the Schedule C of a master trust it invests in">incl. via master trust</div>` : "");
+  const block = ({ r, agg }, bi) => {
+    const nm = r.names;
+    if (!nm.length) return `<div class="pvblock"><h3>${esc(r.input)}</h3><p class="note">No Schedule C provider name contains all of these words. Try fewer or shorter words (for example “Fidelity” rather than “Fidelity Investments Inc”).</p></div>`;
+    const how = r.firms.length
+      ? `<span class="chip mx-exact" title="Matched with the curated firm rule: every known spelling of the firm, with its exclusions. Put the line in quotes to match its words instead.">Firm rule · ${esc(r.firms.map(title).join(", "))}</span>`
+      : `<span class="chip mx-fuzzy" title="No firm rule covers this name, so it matches provider names containing all its words. Check the names below.">Word match</span>`;
+    const shown = agg.list.slice(0, PROV_MAX);
+    return `<div class="pvblock">
+      <h3>${esc(r.input)} ${how} <span class="note">· ${int(agg.list.length)} sponsor${agg.list.length === 1 ? "" : "s"} · ${int(agg.plans)} plan${agg.plans === 1 ? "" : "s"} · ${dollars(agg.dc)} direct${agg.ic ? ` · ${dollars(agg.ic)} indirect` : ""}</span></h3>
+      <details class="pvnames"><summary>${int(nm.length)} provider name${nm.length === 1 ? "" : "s"} ${r.firms.length ? "in the firm rule" : "matched"}, as filed</summary>
+        <ul>${nm.slice(0, 60).map(i => `<li>${esc(title(P.names[i]))} <span class="note">· ${int(P.plansOf.get(i))} plan${P.plansOf.get(i) === 1 ? "" : "s"}</span></li>`).join("")}</ul>
+        ${nm.length > 60 ? `<p class="note">… and ${int(nm.length - 60)} more (all are in the CSV).</p>` : ""}</details>
+      ${shown.length ? `<div class="tw"><table>
+        <thead><tr><th>Plan sponsor</th><th>EIN</th><th>Plans served</th><th>Role</th><th class="n">Direct compensation</th><th class="n">Indirect compensation</th>${f.db ? `<th class="n">Sponsor DB assets</th>` : ""}${f.dc ? `<th class="n">Sponsor DC assets</th>` : ""}</tr></thead>
+        <tbody>${shown.map((a, i) => `<tr class="jump"${i >= PROV_SHOW ? " hidden" : ""} data-ein="${a.ein}" tabindex="0" title="Open this sponsor in the Single Company view">
+          <td style="min-width:220px"><button type="button" class="linkbtn" data-ein="${a.ein}">${esc(title(a.row[1]))}</button>
+            <div class="note">${esc([title(a.row[2]), a.row[3]].filter(Boolean).join(", "))}${a.names.size > 1 ? ` · as ${a.names.size} provider names` : nm.length > 1 ? ` · as ${esc(title(P.names[[...a.names][0]]))}` : ""}</div></td>
+          <td class="mono">${fmtEIN(a.ein)}</td>
+          <td style="white-space:nowrap">${served(a)}</td>
+          <td>${roleChips(a)}</td>
+          <td class="n"><b>${dollars(a.dc)}</b></td>
+          <td class="n">${indirect(a)}</td>
+          ${f.db ? `<td class="n">${a.row[4] ? money(a.row[5]) : "—"}</td>` : ""}
+          ${f.dc ? `<td class="n">${a.row[6] ? money(a.row[7]) : "—"}</td>` : ""}
+        </tr>`).join("")}</tbody>
+        <tfoot><tr><td colspan="4">Total, ${int(agg.list.length)} sponsor${agg.list.length === 1 ? "" : "s"}</td><td class="n">${dollars(agg.dc)}</td><td class="n">${agg.ic ? dollars(agg.ic) : "—"}</td>${f.db ? "<td></td>" : ""}${f.dc ? "<td></td>" : ""}</tr></tfoot>
+      </table></div>
+      ${shown.length > PROV_SHOW ? `<button type="button" class="more" data-b="${bi}">Show ${shown.length === agg.list.length ? "all " + int(shown.length) : "the top " + int(shown.length)} sponsors</button>` : ""}
+      ${agg.list.length > PROV_MAX ? `<p class="note">Showing the ${PROV_MAX} sponsors paying the most; the CSV has all ${int(agg.list.length)}.</p>` : ""}`
+      : `<p class="note">These providers serve no sponsor inside the filters.</p>`}
+    </div>`;
+  };
+  box.innerHTML = `<section class="panel">
+    <div class="lsum">
+      ${kpi("Providers entered", PLIST.res.length)}
+      ${kpi("Matched", matched, "fs good")}
+      ${kpi("Not matched", PLIST.res.length - matched, PLIST.res.length - matched ? "fs bad" : "")}
+      ${kpi("Plan sponsors", int(allSp.size))}
+      ${kpi("Direct compensation", money(blocks.reduce((t, b) => t + b.agg.dc, 0)))}
+    </div>
+    <div class="listbar"><span class="note">${esc(msFilterText(f))}</span></div>
+    ${blocks.map(block).join("")}
+    <p class="foot"><b>Firm rule</b>: when a line names a firm with a curated rule (${esc(Object.keys(PVX.firms || {}).map(title).join(", "))}), it matches every spelling of that firm the rule recognises and leaves out look-alikes it excludes (for example Fidelity leaves out Fidelity & Guaranty Life; Cambridge means Cambridge Associates, not Cambridge Investment Research). These are the same rules the warehouse uses to tag filings (src/firm_aliases.csv). <b>Word match</b>: any other line matches every Schedule C provider whose name, as filed, contains all of its words (ignoring case, punctuation and Inc / Corp / LLC / The; a word of 4+ letters also matches longer words that start with it); put a line in quotes to force a word match. Names are free text, so check the matched names under each provider. A plan is served by its own Schedule C providers and by those of any master trust it invests through (marked “incl. via master trust”); a master trust’s fee covers every plan in the trust and is counted once per sponsor. Compensation is the provider’s direct (line 2d) and indirect (2h) compensation from those filings; eligible indirect compensation is disclosed without an amount. Schedule C lists only providers paid $5,000 or more, and only large plans file it. Roles are inferred from service codes (11 actuarial, 26/27 investment advisory, 28 investment management, 17 pension consulting, 16 general consulting, 15 or 64 recordkeeping); Other / untagged is every entry without one of those codes, including entries with no service code, so with every box ticked all records are included. The role check boxes keep a provider’s entry on a plan only when it carries a ticked role, so a sponsor is listed when the provider serves it in at least one ticked role, and its compensation counts only those entries. ${FILTER_NOTE} Sponsor assets are the sponsor’s total DB / DC net assets at end of plan year. Plan years ${META.years.join(", then ")}.</p>
+  </section>`;
+  wireSponsorLinks(box);
+  box.querySelectorAll("button.more[data-b]").forEach(b => b.addEventListener("click", () => {
+    b.previousElementSibling.querySelectorAll("tr[hidden]").forEach(tr => tr.hidden = false);
+    b.remove();
+  }));
+  setCsv(downloadProvCsv);
+}
+function downloadProvCsv() {
+  const f = msFilter(), P = PVX;
+  const lines = [["Provider (as entered)", "Matched by", "Plan sponsor", "EIN", "City", "State", "DB plans served", "DC plans served", "Via master trust",
+    "Roles", "Service codes", "Direct compensation", "Indirect compensation", "Eligible indirect", ...(f.db ? ["Sponsor DB assets EOY"] : []), ...(f.dc ? ["Sponsor DC assets EOY"] : []), "Provider names (as filed)"]];
+  for (const r of PLIST.res) {
+    const agg = provSponsors(r.names, f);
+    const by = r.firms.length ? "Firm rule: " + r.firms.join(", ") : "Word match";
+    if (!agg.list.length) lines.push([r.input, by, r.names.length ? "(no sponsor inside the filters)" : "(no provider name matched)"]);
+    for (const a of agg.list) lines.push([r.input, by, title(a.row[1]), fmtEIN(a.ein), title(a.row[2]), a.row[3], a.nDB, a.nDC, a.viaMt ? "Yes" : "",
+      a.roles.map(x => x.label).join("; "), [...a.codes].sort().join(" "), a.dc, a.ic || "", a.eic ? "Yes" : "",
+      ...(f.db ? [a.row[4] ? a.row[5] : ""] : []), ...(f.dc ? [a.row[6] ? a.row[7] : ""] : []), [...a.names].map(i => P.names[i]).join("; ")]);
+  }
+  saveCsv(lines, "5500_service_provider_search");
+}
+
+// ---------- tooltip ----------
+document.addEventListener("mousemove", e => {
+  const seg = e.target.closest && e.target.closest(".seg[data-tip]");
+  const tip = $("#tip");
+  if (!seg) { tip.hidden = true; return; }
+  tip.textContent = seg.dataset.tip;
+  tip.hidden = false;
+  const w = tip.offsetWidth;
+  tip.style.left = Math.min(window.innerWidth - w - 8, e.clientX + 14) + "px";
+  tip.style.top = (e.clientY + 14) + "px";
+});
+
+// ---------- boot ----------
+(async () => {
+  await unlock();
+  $("#lock").hidden = false;
+  $("#lock").addEventListener("click", lockOut);
+  try {
+    const idx = await loadGz(IDX_URL);
+    META = idx.meta; ROWS = idx.rows;
+    NORM = ROWS.map(r => norm(r[1]));
+    $("#stamp").textContent = `${ROWS.length.toLocaleString()} sponsors · plan years ${META.years.join(" & ")} · built ${META.built}`;
+  } catch (e) {
+    $("#report").innerHTML = `<div class="panel loading">The sponsor index didn’t load (${esc(e.message)}). Reload the page to try again.</div>`;
+    return;
+  }
+  let t;
+  const q = $("#q");
+  q.addEventListener("input", () => { clearTimeout(t); t = setTimeout(renderResults, 120); });
+  q.addEventListener("focus", () => { if (q.value.trim()) renderResults(); });
+  q.addEventListener("keydown", e => {
+    if (e.key === "ArrowDown") { e.preventDefault(); if ($("#drop").hidden) renderResults(); moveActive(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); moveActive(-1); }
+    else if (e.key === "Escape") { showDrop(false); }
+    else if (e.key === "Enter") {
+      const items = document.querySelectorAll("#drop .res");
+      const b = items[Math.max(0, active)];
+      if (b) choose(b.dataset.ein);
+    }
+  });
+  $("#drop").addEventListener("mousedown", e => e.preventDefault());
+  $("#drop").addEventListener("click", e => { const b = e.target.closest(".res"); if (b) choose(b.dataset.ein); });
+  document.addEventListener("click", e => { if (!e.target.closest("#combo")) showDrop(false); });
+  $("#viewtog").hidden = false;
+  $("#depthtog").hidden = false;
+  let startSummary = false;
+  try { startSummary = localStorage.getItem(DEPTH_KEY) === "1"; } catch (e) {}
+  setDepth(startSummary);
+  $("#vsum").addEventListener("click", () => setDepth(true));
+  $("#vdet").addEventListener("click", () => setDepth(false));
+  $("#listbtn").addEventListener("click", openList);
+  $("#viewone").addEventListener("click", openSingle);
+  if (location.hash === "#list") { openList(); return; }
+  const h = (location.hash || "").match(/^#e(\d{9})$/);
+  const first = h ? h[1] : ROWS.find(r => r[1] && /^THE TJX COMPANIES/.test(r[1]))?.[0];
+  if (first) {
+    const r = ROWS.find(x => x[0] === first);
+    if (r) q.value = title(r[1]);
+    openSponsor(first);
+  } else {
+    $("#report").innerHTML = `<div class="panel loading">Search for a plan sponsor above to see its plans.</div>`;
+  }
+})();
+})();
+</script>
+
+</body>
+</html>
